@@ -9,6 +9,11 @@ app.use(express.json());
 const userRoutes = require('./routes/userRoutes');
 app.use('/api/users', userRoutes);
 
+// backend/index.js
+const authRoutes = require('./routes/authRoutes');
+app.use('/api', authRoutes);
+
+
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

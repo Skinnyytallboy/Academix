@@ -1,5 +1,6 @@
-const mysql = require('mysql2');
+// backend/config/db.js
 require('dotenv').config();
+const mysql = require('mysql2');
 
 const connection = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -8,12 +9,12 @@ const connection = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 
-connection.connect((err) => {
-  if (err) {
-    console.error("Database connection failed:", err.stack);
-    return;
+connection.connect((error) => {
+  if (error) {
+    console.error("Database connection failed:", error);
+  } else {
+    console.log("Connected to AWS RDS MySQL!");
   }
-  console.log("Connected to AWS RDS MySQL!");
 });
 
 module.exports = connection;

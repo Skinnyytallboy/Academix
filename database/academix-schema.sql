@@ -103,6 +103,7 @@ CREATE TABLE Submission (
     FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+-- have to add url of the moss report
 CREATE TABLE MOSS (
     evaluation_id INT PRIMARY KEY AUTO_INCREMENT,
     course_id INT NOT NULL,

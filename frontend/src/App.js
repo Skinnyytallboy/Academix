@@ -1,8 +1,8 @@
-// frontend/App.js
-
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import LoginPage from './Pages/LoginPage';
+import ForgotPasswordPage from './Pages/ForgotPasswordPage';
 import RequestAdminPage from './Pages/RequestAdminPage';
 import AdminDashboard from './Pages/AdminDashboard';
 import ProfessorDashboard from './Pages/ProfessorDashboard';
@@ -10,12 +10,14 @@ import StudentDashboard from './Pages/StudentDashboard';
 
 function App() {
   const [user, setUser] = useState(null);
+
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
   }, []);
+
   useEffect(() => {
     if (user) {
       localStorage.setItem('user', JSON.stringify(user));
@@ -23,6 +25,7 @@ function App() {
       localStorage.removeItem('user');
     }
   }, [user]);
+
   const PrivateRoute = ({ children, role }) => {
     if (!user) {
       return <Navigate to="/" replace />;
@@ -36,8 +39,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LoginPage setUser={setUser} />} />
-        <Route path="/request-admin" element={<RequestAdminPage />} />
+        <Route path="/" element={<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}> <LoginPage setUser={setUser} /> </motion.div>} />
+        <Route path="/request-admin" element={<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}> <RequestAdminPage /></motion.div>} />
+        <Route path="/forgot-password" element={<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}> <ForgotPasswordPage /></motion.div>} />
 
         <Route
           path="/admin-dashboard"
@@ -71,7 +75,6 @@ function App() {
 }
 
 export default App;
-
 
 
 // old shit when i was using supabase

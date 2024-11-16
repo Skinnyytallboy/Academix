@@ -319,140 +319,117 @@ INSERT INTO Assignment (course_id, title, description, due_date, assign_date) VA
 (2, 'Assignment 1: Array Manipulation', 'Implement basic operations on arrays.', '2024-09-20', '2024-09-05'),
 (2, 'Assignment 2: Linked List Implementation', 'Create a linked list and perform operations.', '2024-10-05', '2024-09-20'),
 (2, 'Midterm Project: Data Structure Selection', 'Choose a data structure for a given problem and justify your choice.', '2024-10-20', '2024-10-01');
-
 INSERT INTO Assignment (course_id, title, description, due_date, assign_date) VALUES
 (3, 'Assignment 1: SQL Queries', 'Write SQL queries for given scenarios.', '2024-09-25', '2024-09-10'),
 (3, 'Project: Database Design', 'Design a database schema for a sample application.', '2024-10-15', '2024-09-30'),
 (3, 'Final Exam Preparation', 'Prepare for the final exam by reviewing all topics.', '2024-12-01', '2024-11-15');
-
 INSERT INTO Assignment (course_id, title, description, due_date, assign_date) VALUES
 (4, 'Assignment 1: Process Management', 'Explain process management concepts in detail.', '2024-10-01', '2024-09-15'),
 (4, 'Lab: System Calls Implementation', 'Implement basic system calls in a simulated environment.', '2024-10-20', '2024-10-05'),
 (4, 'Final Project: OS Simulation', 'Create a simulation of an operating system.', '2025-01-05', '2024-12-01');
-
 INSERT INTO Assignment (course_id, title, description, due_date, assign_date) VALUES
 (5, 'Assignment 1: Software Development Life Cycle', 'Describe the phases of SDLC.', '2024-10-10', '2024-09-25'),
 (5, 'Group Project: Agile Methodology Application', 'Apply Agile methodology to a group project.', '2025-01-15', '2025-01-01'),
 (5, 'Peer Review Session Preparation', 'Prepare for peer review sessions with your group.', '2025-01-05', '2025-01-02');
-
 INSERT INTO Assignment (course_id, title, description, due_date, assign_date) VALUES
 (6, 'Assignment 1: HTML Basics', 'Create a simple webpage using HTML.', '2024-09-20', '2024-09-05'),
 (6, 'Assignment 2: CSS Styling', "Style your webpage using CSS.", "2024-10-05", "2024-09-20"),
 (6, "Final Project: Complete Website", "Develop a complete website using HTML and CSS.", "2025-01-10", "2025-01-01");
-
 INSERT INTO Assignment (course_id, title, description, due_date, assign_date) VALUES
 (8, "Assignment 1: AI Concepts", "Explain basic AI concepts and their applications.", "2024-11-15", "2024-11-01"),
 (8,"Project: Implementing AI Algorithms","Implement a basic AI algorithm using Python.","2025 - 01 - 05","  2025 - 01 - 02"),
 (8,"Midterm Exam Preparation","Prepare for the midterm exam by reviewing all topics.","  2025 - 02 - 01","  2025 - 01 - 20");
-
 INSERT INTO Assignment (course_id,title , description ,due_date ,assign_date ) VALUES 
 (9,"Assignment 1: ML Basics","Complete exercises on machine learning fundamentals.","  2025 - 02 - 15","   2025 - 02 - 01"),
 (9,"Project: Build a ML Model","Build and evaluate a simple machine learning model.","   2025 - 03 - 05","   2025 - 02 - 20"),
 (9,"Final Exam Preparation","Prepare for the final exam by reviewing all topics.","   2025 -04 -15","   2025 -04 -05");
-
 INSERT INTO Assignment (course_id,title , description ,due_date ,assign_date ) VALUES 
 (10,"Assignment 1: Neural Networks","Implement a simple neural network from scratch.","   2025 -03 -15","   2025 -03 -01"),
 (10,"Project: Image Classification","Build an image classification model using deep learning.","   2025 -04 -05","   2025 -03 -20"),
 (10,"Midterm Exam Preparation","Prepare for the midterm exam by reviewing all topics.","   2025 -04 -25","   2025 -04 -15");
-
 INSERT INTO Assignment (course_id,title , description ,due_date ,assign_date ) VALUES 
 (11,"Assignment 1: Security Principles","Discuss basic security principles and practices.","   2025 -03 -25","   2025 -03 -10"),
 (11,"Lab Work: Network Security Assessment","Perform a network security assessment on a sample network.","   2019 -04 -15 ","   2019 -04 -05"),
 (11,"Final Project: Security Policy Development","Develop a security policy for an organization.","   2019 -05 -05 ","  2019 -04 -20");
-
 INSERT INTO Assignment (course_id,title , description ,due_date ,assign_date ) VALUES 
 (12,"Assignment : Firewalls and VPNs","Explain the role of firewalls and VPNs in network security.","  2019 -04 -30 ","  2019 -04 -15"),
 (12,"Lab Work : Intrusion Detection Systems","Set up an intrusion detection system in a lab environment.","  2019 –06 –05 ","   2019 –05 –20"),
 (12,"Final Exam Preparation : Network Security Concepts ","Prepare for the final exam by reviewing all network security concepts.","   2019 –06 –25 ","   2019 –06 –15");
-
 INSERT INTO Assignment (course_id,title , description ,due_date ,assign_date ) VALUES 
 (13,"Assignment : Ethical Hacking Techniques ","Research and write about ethical hacking techniques.","   2019 –06 –30 ","   2019 –06 –15"),
 (13,"Lab Work : Penetration Testing ","Conduct penetration testing on a sample application.","   2019 –07 –10 ","   2019 –07 –01"),
 (13,"Final Project : Ethical Hacking Report ","Submit a report on your findings from the penetration testing lab work.","   2019 –07 –25 ","   2019 –07 –15");
-
 INSERT INTO Assignment (course_id,title , description ,due_date ,assign_date ) VALUES 
 (14,"Assignment : Cloud Service Models ","Explain different cloud service models and their use cases.","   2019 –07 –30 ","   2019 –07 –20"),
 (14,"Group Project : Cloud Architecture Design ","Design cloud architecture for a hypothetical organization.","   2019 –08 –15 ","   2019 –08 –01"),
 (14,"Presentation : Cloud Computing Trends ","Prepare and present on emerging trends in cloud computing.","   2019 –08 –30 ","   2019 –08 –20");
-
 INSERT INTO Assignment (course_id,title , description ,due_date ,assign_date ) VALUES 
 (15,"Assignment : Designing Cloud Solutions ","Design solutions based on cloud architecture principles.","   2019 –08 –31 ","   2019 –08 –20"),
 (15,"Lab Work : Deploying Applications in the Cloud ","Deploy an application in a cloud environment using provided tools.","   2019 –09–15 ","   2019–09–05"),
 (15,"Final Presentation : Cloud Architecture Project ","Present your cloud architecture project to the class.","   2019–09–30 ","   2019–09–20");
-
 INSERT INTO Assignment (course_id,title , description ,due_date ,assign_date ) VALUES 
 (16,"Assignment : Security in Cloud Computing ","Discuss security challenges in cloud computing environments.","   2019–09–25 ","   2019–09–10"),
 (16,"Lab Work : Implementing Cloud Security Measures ","Implement security measures in a cloud setup during lab work.","   2019–10–05 ","   2019–09–25"),
 (16,"Final Report : Cloud Security Assessment ","Submit a report assessing the security of your deployed application in the cloud.","   2019–10–20 ","   2019–10–10");
-
 INSERT INTO Assignment (course_id,title , description ,due_date ,assign_date ) VALUES 
 (17,"Assignment : Embedded Systems Basics ","Complete exercises on embedded systems fundamentals.","   2019–10–30 ","   2019–10–15"),
 (17,"Project : Design an Embedded System ","Design an embedded system based on given specifications.","   2019–11–15 ","   2019–11–01"),
 (17,"Presentation : Embedded Systems Applications ","Present your project focusing on applications of embedded systems.","   2019–11–30 ","   2019–11–20");
-
 INSERT INTO Assignment (course_id,title , description ,due_date ,assign_date ) VALUES 
 (18,"Assignment : Microcontroller Basics ", "Explain microcontroller architecture and programming basics.", "   2019–11–30 ", "   2019–11–15 "),
 (18,"Lab Work : Programming Microcontrollers ", "Program microcontrollers to perform specific tasks.", "   2018–12–15 ", "   2018–12–01 "),
 (18,"Final Project : Microcontroller Application ", "Develop an application using microcontrollers.", "   2018–12–31 ", "   2018–12–20 ");
-
 INSERT INTO Assignment (course_id,title , description ,due_date ,assign_date ) VALUES 
 (19,"Assignment : DSP Fundamentals ", "Discuss digital signal processing fundamentals.", "   2018–12–31 ", "   2018—12—20 "),
 (19,"Lab Work : Signal Processing Techniques ", "Implement signal processing techniques in lab work.", "   .019—12—31 ", ".019—12—25 "),
 (19,"Final Report : DSP Applications ", "Submit a report on applications of digital signal processing.", ".019—12—31 ", ".019—12—25 ");
-
 INSERT INTO Assignment (course_id,title , description ,due_date ,assign_date ) VALUES 
 (20,"Assignment : Introduction to Blockchain ", "Write about blockchain technology basics.", ".019—12—31 ", ".019—12—25 "),
 (20,"Group Project : Blockchain Use Cases ", "Research and present blockchain use cases.", ".019—12—31 ", ".019—12—25 "),
 (20,"Final Presentation : Blockchain Technology ", "Present your findings on blockchain technology.", ".019—12—31 ", ".019—12—25 ");
-
 INSERT INTO Assignment (course_id,title , description ,due_date ,assign_date ) VALUES 
 (21,"Assignment : Smart Contracts Basics ", "Explain smart contracts and their applications.", ".019—12—31 ", ".019—12—25 "),
 (21,"Lab Work : Developing Smart Contracts ", "Develop smart contracts using provided tools.", ".019—12—31 ", ".019—12—25 "),
 (21,"Final Report : DApps Development ", "Submit a report on developing decentralized applications.", ".019—12—31 ", ".019—12—25 ");
-
 INSERT INTO Assignment (course_id,title , description ,due_date ,assign_date ) VALUES 
 (22,"Assignment : Cryptography Fundamentals ", "Discuss cryptography principles.", ".019—12—31 ", ".019—12—25 "),
 (22,"Lab Work : Implementing Cryptographic Algorithms ", "Implement algorithms in lab work.", ".019 —12 —31", ".019 —12 —25 ");
 
 -- Submission data is entered as
+-- Only added data for student_id 1, have to add more data for other students and stuff.
+INSERT INTO Submission (assignment_id, student_id, submitted_at, file_url, status) VALUES
+(4 ,1, '2022-01-01 12:00:00', 'https://example.com/file', 'Submitted'),
+(5 ,1, '2022-01-01 12:00:00', 'https://example.com/file', 'Late'),
+(6 ,1, '2022-01-01 12:00:00', 'https://example.com/file', 'Submitted'),
+(64,1, '2022-01-01 12:00:00', 'https://example.com/file', 'Submitted'),
+(65,1, '2022-01-01 12:00:00', NULL, 'Not Submitted'),
+(66,1, '2022-01-01 12:00:00', 'https://example.com/file', 'Submitted'),
+(79,1, '2022-01-01 12:00:00', 'https://example.com/file', 'Submitted'),
+(80,1, '2022-01-01 12:00:00', 'https://example.com/file', 'Submitted'),
+(81,1, '2022-01-01 12:00:00', 'https://example.com/file', 'Submitted');
+--(16, 7, '2022-01-01 12:00:00', 'https://example.com/file', 'Submitted');
 
+-- query to get the course_id, department_id, student_id, and teacher_id for a specific student
+SELECT 
+    a.assignment_id, 
+    c.course_id, 
+    d.department_id, 
+    s.student_id
+FROM Assignment a
+JOIN Courses c ON a.course_id = c.course_id
+JOIN Department d ON c.department_id = d.department_id
+JOIN Student s ON s.major = c.course_id
+WHERE s.student_id = 1;
 
+-- MOSS data is entered as
+-- not entered yet, have to add data for MOSS later on.
+-- firstly to modify the database and then add data for MOSS.
 
+-- Grade data is entered as
+-- not entered yet, have to add data for grades later on.
 
+-- ToDo_List data is entered as
+-- not entered yet, have to add data for Todo_List later on.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-- Chat data is entered as
+-- not entered yet, have to add data for Chat later on.

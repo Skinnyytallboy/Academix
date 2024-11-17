@@ -1,16 +1,19 @@
-// api.js
-import axios from 'axios';
-
 export const loginUser = async (email, password) => {
   try {
-    const response = await axios.post('/api/login', { email, password }); // Replace with your backend endpoint
-    if (response.data) {
-      return response.data; // Assuming your backend sends user data on successful login
+    const response = await fetch('http://localhost:5000/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    if (response.ok) {
+      const userData = await response.json();
+      return userData; // Return the user data
     } else {
-      return null; // Return null for invalid credentials
+      throw new Error('Invalid credentials');
     }
   } catch (error) {
-    console.error('Login error:', error);
-    throw new Error('Login failed');
+    throw new Error('An error occurred while logging in');
   }
 };

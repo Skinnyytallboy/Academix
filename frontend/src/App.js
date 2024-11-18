@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import ErrorPage from './Pages/ErrorPage';
+import ProtectedRoute from './Services/ProtectedRoute';
 // Lazy Loading Pages
 const LoginPage = lazy(() => import('./Pages/LoginPage'));
 const ForgotPasswordPage = lazy(() => import('./Pages/ForgotPasswordPage'));

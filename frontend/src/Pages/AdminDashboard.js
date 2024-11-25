@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import Sidebar from '../Components/Sidebar';
-import Header from '../Components/Header';
-import ManageUsers from '../Components/ManageUsers';
+import Sidebar from '../Components/forAdmin/Sidebar';
+import Header from '../Components/forAdmin/Header';
+import ManageUsers from '../Components/forAdmin/ManageUsers';
 import Requests from '../Components/Requests';
-import Analytics from '../Components/Analytics';
+import Analytics from '../Components/forAdmin/Analytics';
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ user }) => {
   const [activeTab, setActiveTab] = useState('ManageUsers');
 
   const renderContent = () => {
@@ -24,8 +24,8 @@ const AdminDashboard = () => {
   return (
     <div className="flex h-screen">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div className="flex-1">
-        <Header />
+      <div className="flex-1 ">
+        <Header user={user} />
         <div className="p-4">{renderContent()}</div>
       </div>
     </div>

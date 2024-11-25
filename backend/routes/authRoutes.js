@@ -20,7 +20,13 @@ router.post('/login', (req, res) => {
         if (password !== user.password) {
             return res.status(401).json({ status: 'error', message: 'Invalid credentials' });
         }
-        res.json({ status: 'success', userId: user.user_id, role: user.role });
+        res.json({ 
+            status: 'success', 
+            userId: user.user_id, 
+            role: user.role,
+            email: user.email,
+            username: user.username
+        });
     });
 });
 

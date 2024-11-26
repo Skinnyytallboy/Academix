@@ -26,6 +26,8 @@ const addUser = (req, res) => {
   });
 };
 
+
+
 module.exports = { getUsers, addUser };
 
 

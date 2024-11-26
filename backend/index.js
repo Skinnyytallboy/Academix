@@ -11,6 +11,7 @@ app.use(express.json());
 
 app.use('/api', authRoutes);       
 app.use('/api/users', userRoutes); 
+app.use('/api/count', userRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });

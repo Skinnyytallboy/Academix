@@ -2,16 +2,15 @@
 const express = require('express');
 const cors = require('cors');
 const connection = require('./config/db');
-const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
+const countRoutes = require('./routes/countRoutes');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 app.use('/api', authRoutes);       
-app.use('/api/users', userRoutes); 
-app.use('/api/count', userRoutes);
+app.use('/api/count', countRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });

@@ -71,7 +71,7 @@ function App() {
               }
             />
             <Route
-              path="/teacher-dashboard"
+              path="/professor-dashboard"
               element={
                 <PrivateRoute role="teacher">
                   <TeacherDashboard user={user} />

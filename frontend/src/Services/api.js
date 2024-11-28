@@ -18,6 +18,8 @@ export const loginUser = async (email, password) => {
   }
 };
 
+
+
 export const getData = async () => {
   try {
     const response = await fetch('http://localhost:5000/api/count');  // Endpoint for all data
@@ -29,5 +31,37 @@ export const getData = async () => {
   } catch (error) {
     console.error('Error fetching all data:', error);
     return { status: 'error', message: 'Failed to fetch all data' };  // Handle error
+  }
+};
+
+export const getTeacherCourses = async () => {
+  try {
+    // Retrieve the token from localStorage
+    const storedUser = localStorage.getItem('user');
+    const user = storedUser ? JSON.parse(storedUser) : null;
+
+    if (!user || !user.token) {
+      throw new Error('No user or token found. Please log in first.');
+    }
+
+    const token = user.token; // Extract the token from the stored user data
+
+    const response = await fetch('http://localhost:5000/api/teacher/courses', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch teacher courses');
+    }
+
+    const data = await response.json();
+    return data; // Return the fetched data
+  } catch (error) {
+    console.error('Error fetching teacher courses:', error);
+    return { status: 'error', message: error.message }; // Handle error
   }
 };

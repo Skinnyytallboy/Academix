@@ -29,7 +29,7 @@ const ProfessorHeader = ({ user }) => {
             className="w-25 h-10 rounded cursor-pointer"
             onClick={() => navigate('/admin-dashboard')}
           />
-          <h1 className="text-lg font-semibold text-gray-800">Welcome to {user ? `${formatName(user.username)}'s Dashboard` : 'Admin Dashboard'}</h1>
+          <h1 className="text-lg font-semibold text-indigo-700">Welcome to {user ? `${formatName(user.username)}'s Dashboard` : 'Admin Dashboard'}</h1>
         </div>
 
         <div className="relative">

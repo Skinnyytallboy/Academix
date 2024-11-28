@@ -46,7 +46,7 @@ const Header = ({ user }) => {
           {isDropdownOpen && (
               <div className="absolute dropdown-menu right-0 mt-2 w-75 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                 <button
-                  onClick={() => navigate('/profile')}
+                  onClick={() => navigate('/Profile')}
                   className="block w-full px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 font-medium text-sm transition duration-150 ease-in-out"
                 >
                   Profile

@@ -1,13 +1,13 @@
 import React from 'react';
-import Profile from '../components/Profile';
+import Profile from '../Components/Profile';
 
-const ProfilePage = () => {
-  return (
-    <div className="p-4">
-      <h2 className="text-2xl font-medium mb-4">My Profile</h2>
-      <Profile />
-    </div>
-  );
+const ProfilePage = ({ user }) => {
+    return (
+        <div className="p-6 max-w-4xl mx-auto">
+            <h2 className="text-3xl font-semibold mb-6 text-center text-gray-800">My Profile</h2>
+            <Profile user={user} />
+        </div>
+    );
 };
 
 export default ProfilePage;

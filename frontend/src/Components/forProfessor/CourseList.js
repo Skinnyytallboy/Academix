@@ -11,21 +11,24 @@ const CourseList = () => {
   ];
 
   const handleCourseClick = (courseId) => {
-    navigate(`/course/${courseId}`);  // Navigate to the individual course page
+    navigate(`/course/${courseId}`);
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h2 className="text-2xl font-semibold mb-6">Courses</h2>
-      <ul className="space-y-6">
-        {courses.map(course => (
+    <div className="max-w-6xl mx-auto p-6">
+      <h2 className="text-3xl font-semibold mb-8 text-center text-indigo-600">Available Courses</h2>
+      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {courses.map((course) => (
           <li
             key={course.id}
             onClick={() => handleCourseClick(course.id)}
-            className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl cursor-pointer transition-transform transform hover:scale-105"
+            className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl cursor-pointer transition-transform transform hover:scale-105 hover:shadow-indigo-300"
           >
-            <h3 className="font-semibold text-xl text-indigo-600">{course.name}</h3>
-            <p className="text-gray-700 mt-2">{course.description}</p>
+            <div className="flex items-center justify-between">
+              <h3 className="text-2xl font-semibold text-indigo-600">{course.name}</h3>
+              <span className="bg-indigo-100 text-indigo-600 py-1 px-4 rounded-full text-sm">Explore</span>
+            </div>
+            <p className="text-gray-700 mt-3">{course.description}</p>
           </li>
         ))}
       </ul>

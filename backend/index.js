@@ -4,6 +4,7 @@ const cors = require('cors');
 const connection = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const countRoutes = require('./routes/countRoutes');
+const teacherRoutes = require('./routes/teacherRoutes');
 
 const app = express();
 app.use(cors());

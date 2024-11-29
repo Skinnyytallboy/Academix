@@ -12,6 +12,7 @@ const AdminDashboard = lazy(() => import('./Pages/AdminDashboard'));
 const TeacherDashboard = lazy(() => import('./Pages/ProfessorDashboard'));
 const StudentDashboard = lazy(() => import('./Pages/StudentDashboard'));
 const ProfilePage = lazy(() => import('./Pages/ProfilePage'));
+const CoursePage = lazy(() => import('./Pages/CoursePage'));
 
 function App() {
   const [user, setUser] = useState(null);
@@ -72,6 +73,7 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route path="/course/:courseId" element={<CoursePage />} />
             <Route
               path="/professor-dashboard"
               element={

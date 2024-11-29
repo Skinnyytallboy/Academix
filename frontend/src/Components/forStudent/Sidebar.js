@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { FaBars, FaUserCog, FaChartPie, FaUserFriends, FaSignOutAlt } from 'react-icons/fa';
+import 'react-calendar/dist/Calendar.css'; 
+import { FaBars, FaTasks, FaCalendarAlt, FaChalkboardTeacher, FaSignOutAlt, FaClipboardCheck} from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -8,20 +10,19 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     localStorage.removeItem('user');
     window.location.href = '/';
   };
-
   const tabs = [
-    { name: 'ManageUsers', icon: <FaUserFriends /> },
-    { name: 'Requests', icon: <FaUserCog /> },
-    { name: 'Analytics', icon: <FaChartPie /> },
+    { name: 'My Courses', icon: <FaChalkboardTeacher /> },
+    { name: 'Assignments', icon: <FaClipboardCheck /> },
+    { name: 'Submit Assignment', icon: <FaTasks /> },
+    { name: 'Calendar', icon: <FaCalendarAlt /> },
   ];
-
   return (
     <div
       className={`h-full bg-indigo-950 text-white transition-width duration-300 ease-in-out ${
         isCollapsed ? 'w-20' : 'w-64'
       } flex flex-col`}>
       <div className="flex items-center justify-between p-4 border-b border-indigo-900">
-        {!isCollapsed && <h1 className="text-xl font-bold">Student Dashboard</h1>}
+        {!isCollapsed && <h1 className="text-xl font-bold">Students Dashboard</h1>}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="text-white hover:text-gray-300 transition">
@@ -30,26 +31,28 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       </div>
       <div className="flex-1 overflow-y-auto">
         {tabs.map((tab) => (
-          <button
+          <Link
             key={tab.name}
-            onClick={() => setActiveTab(tab.name)}
+            to={tab.link}
             className={`flex items-center gap-4 w-full px-4 py-3 text-left transition duration-200 ease-in-out ${
-                activeTab === tab.name
-                  ? 'bg-indigo-800 text-gray-100 font-semibold'
-                  : 'hover:bg-indigo-900 hover:text-gray-200'
-              }`} >
+              activeTab === tab.name
+                ? 'bg-indigo-800 text-gray-100 font-semibold'
+                : 'hover:bg-indigo-900 hover:text-gray-200'
+            }`}
+            onClick={() => setActiveTab(tab.name)}
+          >
             <span className="text-lg">{tab.icon}</span>
             {!isCollapsed && <span>{tab.name}</span>}
-          </button>
+          </Link>
         ))}
       </div>
       <div className="p-4 border-t border-indigo-900">
-          <button
-            onClick={handleLogout}
-            className="w-full text-left px-4 py-2 hover:bg-indigo-900 hover:text-gray-300 transition">
-            {!isCollapsed ? 'Logout' : <FaSignOutAlt />}
-          </button>
-        </div>
+        <button
+          onClick={handleLogout}
+          className="w-full text-left px-4 py-2 hover:bg-indigo-900 hover:text-gray-300 transition">
+          {!isCollapsed ? 'Logout' : <FaSignOutAlt />}
+        </button>
+      </div>
     </div>
   );
 };

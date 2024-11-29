@@ -30,3 +30,7 @@ Then you can update your code like this:
 
 
 2. I implemented / for login so think on that whether i am doing it right or i have to change that
+
+
+
+updated schema

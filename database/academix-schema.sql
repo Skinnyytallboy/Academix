@@ -18,20 +18,20 @@ CREATE TABLE Student (
     semester INT NOT NULL,
     academic_year DATE NOT NULL,
     current_status ENUM('Active', 'Inactive', 'Graduated', 'Suspended') NOT NULL,
-    FOREIGN KEY (student_id) REFERENCES User(user_id) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (student_id) REFERENCES User(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Teacher (
     teacher_id INT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    FOREIGN KEY (teacher_id) REFERENCES User(user_id) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (teacher_id) REFERENCES User(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Admin (
     admin_id INT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     role VARCHAR(50) NOT NULL,
-    FOREIGN KEY (admin_id) REFERENCES User(user_id) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (admin_id) REFERENCES User(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Courses (
@@ -46,8 +46,8 @@ CREATE TABLE Teacher_Courses (
     course_id INT NOT NULL,
     teacher_id INT NOT NULL,
     PRIMARY KEY (course_id, teacher_id),
-    FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (teacher_id) REFERENCES Teacher(teacher_id) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (teacher_id) REFERENCES Teacher(teacher_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Enrollment (
@@ -56,8 +56,8 @@ CREATE TABLE Enrollment (
     status ENUM('Enrolled', 'Completed', 'Withdrawn', 'Failed', 'Incomplete') NOT NULL DEFAULT 'Enrolled',
     grade ENUM('A+', 'A', 'A-', 'B+', 'B', 'B-', 'C', 'D', 'F') DEFAULT NULL,
     PRIMARY KEY (course_id, student_id),
-    FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Assignment (
@@ -70,7 +70,7 @@ CREATE TABLE Assignment (
     file_url VARCHAR(255),
     file_type VARCHAR(50),
     file_phys LONGBLOB,
-    FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Submission (
@@ -84,8 +84,8 @@ CREATE TABLE Submission (
     file_url VARCHAR(255),
     file_type VARCHAR(50),
     file_phys LONGBLOB,
-    FOREIGN KEY (assignment_id) REFERENCES Assignment(assignment_id) ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (assignment_id) REFERENCES Assignment(assignment_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- have to add url of the moss report
@@ -95,8 +95,8 @@ CREATE TABLE MOSS (
     assignment_id INT NOT NULL,
     checked_at DATE,
     isChecked BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (assignment_id) REFERENCES Assignment(assignment_id) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (assignment_id) REFERENCES Assignment(assignment_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Grades (
@@ -106,8 +106,8 @@ CREATE TABLE Grades (
     score DECIMAL(5, 2) NOT NULL,
     feedback VARCHAR(255),
     graded_at DATE NOT NULL,
-    FOREIGN KEY (submission_id) REFERENCES Submission(submission_id) ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (teacher_id) REFERENCES Teacher(teacher_id) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (submission_id) REFERENCES Submission(submission_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (teacher_id) REFERENCES Teacher(teacher_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Chat (
@@ -117,8 +117,8 @@ CREATE TABLE Chat (
     message VARCHAR(500) NOT NULL,
     sent_at DATETIME,
     video_call_url VARCHAR(255),
-    FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE RESTRICT ON UPDATE CASCADE,
-    FOREIGN KEY (sender_id) REFERENCES User(user_id) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (sender_id) REFERENCES User(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- UPDATES IN DATABASE SCHEMA

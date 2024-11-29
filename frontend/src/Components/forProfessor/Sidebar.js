@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import 'react-calendar/dist/Calendar.css'; 
-import { FaBars, FaTasks, FaCalendarAlt, FaChalkboardTeacher, FaSignOutAlt } from 'react-icons/fa';
+import { FaBars, FaCalendarAlt, FaBookOpen, FaSignOutAlt, FaClipboardList, FaClipboardCheck, FaChartBar } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
@@ -12,9 +12,11 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   };
 
   const tabs = [
-    { name: 'My Courses', icon: <FaChalkboardTeacher /> },
-    { name: 'Assignments', icon: <FaTasks />},
-    { name: 'Calender', icon: <FaCalendarAlt />},
+    { name: 'My Courses', icon: <FaBookOpen /> },
+    { name: 'Assignments', icon: <FaClipboardList /> },
+    { name: 'Calendar', icon: <FaCalendarAlt /> },
+    { name: 'Grade Submissions', icon: <FaClipboardCheck /> },
+    { name: 'Student Grades', icon: <FaChartBar /> },
   ];
 
   return (

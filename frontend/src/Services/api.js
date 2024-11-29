@@ -36,21 +36,22 @@ export const getData = async () => {
 
 export const getTeacherCourses = async () => {
   try {
-    // Retrieve the token from localStorage
+    // Retrieve user data from localStorage
     const storedUser = localStorage.getItem('user');
     const user = storedUser ? JSON.parse(storedUser) : null;
 
-    if (!user || !user.token) {
-      throw new Error('No user or token found. Please log in first.');
+    if (!user || !user.userId) {
+      throw new Error('No user or userId found. Please log in first.');
     }
 
-    const token = user.token; // Extract the token from the stored user data
+    const teacherId = user.userId; // Extract the teacherId
 
+    // Make a request to the server with teacherId
     const response = await fetch('http://localhost:5000/api/teacher/courses', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
         'Content-Type': 'application/json',
+        'teacherId': teacherId, // Send teacherId in headers
       },
     });
 
@@ -59,7 +60,7 @@ export const getTeacherCourses = async () => {
     }
 
     const data = await response.json();
-    return data; // Return the fetched data
+    return data; // Return the fetched courses
   } catch (error) {
     console.error('Error fetching teacher courses:', error);
     return { status: 'error', message: error.message }; // Handle error

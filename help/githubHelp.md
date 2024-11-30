@@ -15,7 +15,7 @@
 ### **Github Push changes**
 - `git add .` –  Command will be used to stage all the changes you did in the project.
 - `git commit -m "Your message here"` – Where you commit the changes with the proper message.
-- `git push` or `git push --force` – through which you will push the changes so everyone can see and like to upload everything on the website.
+- `git push` or `git push --force` or `git push origin main` – through which you will push the changes so everyone can see and like to upload everything on the website.
 
 
 

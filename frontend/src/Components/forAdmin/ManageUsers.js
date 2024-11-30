@@ -12,6 +12,7 @@ const ManageUsers = () => {
     password: '',
     role: 'student',
     studentAttributes: {
+      name: '',
       dob: '',
       rollNo: '',
       semester: '',
@@ -83,6 +84,7 @@ const ManageUsers = () => {
           password: '',
           role: 'student',
           studentAttributes: {
+            name: '',
             dob: '',
             rollNo: '',
             semester: '',
@@ -208,6 +210,18 @@ const ManageUsers = () => {
               </select>
               {newUser.role === 'student' && (
                 <>
+                  <input
+                  type="text"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Name"
+                  value={newUser.studentAttributes.name}
+                  onChange={(e) =>
+                    setNewUser ({
+                      ...newUser ,
+                      studentAttributes: { ...newUser.studentAttributes, name: e.target.value },
+                    })
+                  }
+                />
                   <input
                     type="date"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

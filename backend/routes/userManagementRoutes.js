@@ -38,7 +38,7 @@ router.get('/users', (req, res) => {
 router.post('/users', (req, res) => {
 
   console.log('Incoming request data:', req.body);
-  const { username, email, password, role, studentDetails, teacherDetails, adminDetails } = req.body;
+  const { username, email, password, role, studentAttributes, teacherAttributes, adminAttributes } = req.body;
 
   
   // Check for required fields
@@ -67,12 +67,12 @@ router.post('/users', (req, res) => {
     if (role === 'student') {
       // Validate and prepare student details
       if (
-        !studentDetails.name || 
-        !studentDetails.dob || 
-        !studentDetails.roll_no || 
-        !studentDetails.semester || 
-        !studentDetails.academic_year || 
-        !studentDetails.current_status
+        !studentAttributes.name || 
+        !studentAttributes.dob || 
+        !studentAttributes.rollNo || 
+        !studentAttributes.semester || 
+        !studentAttributes.academicYear || 
+        !studentAttributes.currentStatus
       ) {
         return res.status(400).json({ status: 'error', message: 'Missing or incomplete student details.' });
       }
@@ -83,33 +83,33 @@ router.post('/users', (req, res) => {
       `;
       queryParams.push(
         userId,
-        studentDetails.name, 
-        studentDetails.dob,
-        studentDetails.roll_no,
-        studentDetails.semester,
-        studentDetails.academic_year,
-        studentDetails.current_status
+        studentAttributes.name, 
+        studentAttributes.dob,
+        studentAttributes.rollNo,
+        studentAttributes.semester,
+        studentAttributes.academicYear,
+        studentAttributes.currentStatus
       );
     }
 
     if (role === 'teacher') {
       // Validate and prepare teacher details
-      if (!teacherDetails.name) {
+      if (!teacherAttributes.name) {
         return res.status(400).json({ status: 'error', message: 'Missing teacher details.' });
       }
 
       insertRoleQuery = 'INSERT INTO Teacher (teacher_id, name) VALUES (?, ?)';
-      queryParams.push(userId, teacherDetails.name);
+      queryParams.push(userId, teacherAttributes.name);
     }
 
     if (role === 'admin') {
       // Validate and prepare admin details
-      if (!adminDetails.name || !adminDetails.role) {
+      if (!adminAttributes.name || !adminAttributes.role) {
         return res.status(400).json({ status: 'error', message: 'Missing admin details.' });
       }
 
       insertRoleQuery = 'INSERT INTO Admin (admin_id, name, role) VALUES (?, ?, ?)';
-      queryParams.push(userId, adminDetails.name, adminDetails.role);
+      queryParams.push(userId, adminAttributes.name, adminAttributes.role);
     }
 
     // Insert into the role-specific table

@@ -19,7 +19,6 @@ export const loginUser = async (email, password) => {
 };
 
 
-
 export const getCount = async () => {
   try {
     const response = await fetch('http://localhost:5000/api/count');

@@ -19,18 +19,17 @@ export const loginUser = async (email, password) => {
 };
 
 
-//admin dashboard analytics
-export const getData = async () => {
+export const getCount = async () => {
   try {
-    const response = await fetch('http://localhost:5000/api/count');  // Endpoint for all data
-    if (!response.ok) {  // Check if the response status is OK
+    const response = await fetch('http://localhost:5000/api/count');
+    if (!response.ok) {
       throw new Error('Failed to fetch all data')
     }
-    const allData = await response.json();  // Parse the JSON response
-    return allData;  // Return the fetched data (you can use it in your UI)
+    const allData = await response.json();
+    return allData;
   } catch (error) {
     console.error('Error fetching all data:', error);
-    return { status: 'error', message: 'Failed to fetch all data' };  // Handle error
+    return { status: 'error', message: 'Failed to fetch all data' };
   }
 };
 

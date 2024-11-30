@@ -9,7 +9,7 @@ import CourseManagement from '../Components/forAdmin/CourseManagement';
 import RoleManagement from '../Components/forAdmin/RoleManagement';
 
 const AdminDashboard = ({ user }) => {
-  const [activeTab, setActiveTab] = useState('ManageUsers');
+  const [activeTab, setActiveTab] = useState('Manage Users');
 
   const renderContent = () => {
     switch (activeTab) {
@@ -19,7 +19,7 @@ const AdminDashboard = ({ user }) => {
         return <Analytics />;
       case 'Course Management':
         return <CourseManagement />;
-      case 'Role Management':
+      case 'Role Management': 
         return <RoleManagement />;
       default:
         return <ManageUsers />;

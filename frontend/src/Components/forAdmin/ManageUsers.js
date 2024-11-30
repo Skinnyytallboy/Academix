@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { fetchUsers } from '../../Services/api';
+import { fetchUsers, addUser , deleteUser  } from '../../Services/api';
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newUser, setNewUser] = useState({
+  const [newUser , setNewUser ] = useState({
     username: '',
     email: '',
     password: '',
@@ -24,68 +24,56 @@ const ManageUsers = () => {
       role: '',
     }
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const usersPerPage = 10;
 
   useEffect(() => {
-    const getUsers = async () => {
-      try {
-        const fetchedUsers = await fetchUsers();
-        if (fetchedUsers && Array.isArray(fetchedUsers)) {
-          setUsers(fetchedUsers);
-        } else {
-          setUsers([]);
-        }
-      } catch (error) {
-        console.error('Error fetching users:', error);
-        setUsers([]); // Set an empty array in case of error
+    const fetchUsersData = async () => {
+      const response = await fetchUsers();
+      if (response.status === "success") {
+        setUsers(response.users);
+        setTotalUsers(response.users.length); // Assuming response.users is an array
+      } else {
+        alert('Failed to fetch users');
       }
     };
-    getUsers();
+    fetchUsersData();
   }, []);
 
-  const handleDeleteUser = async (index) => {
+  const handleDeleteUser  = async (index) => {
     const userId = users[index].user_id;  // Assuming each user has a user_id
-    const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (response.ok) {
-      const updatedUsers = [...users];
-      updatedUsers.splice(index, 1);
-      setUsers(updatedUsers);
-    } else {
-      alert('Failed to delete user');
+    try {
+      const result = await deleteUser (userId); // Use deleteUser  function
+      if (result) {
+        const updatedUsers = [...users];
+        updatedUsers.splice(index, 1);
+        setUsers(updatedUsers);
+      }
+    } catch (error) {
+      alert(error.message || 'Failed to delete user');
     }
   };
 
-  const handleAddUser = async () => {
+  const handleAddUser  = async () => {
     if (
-      !newUser.username ||
-      !newUser.email ||
-      !newUser.password ||
-      !newUser.role
+      !newUser .username ||
+      !newUser .email ||
+      !newUser .password ||
+      !newUser .role
     ) {
       alert('All fields are required!');
       return;
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/admin/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newUser),
-      });
-
-      if (response.ok) {
+      const result = await addUser (newUser ); // Use addUser  function
+      if (result) {
         // Refresh the user list after adding a new user
         const fetchedUsers = await fetchUsers();
         setUsers(fetchedUsers);
         setIsModalOpen(false);
-        setNewUser({
+        setNewUser ({
           username: '',
           email: '',
           password: '',
@@ -105,32 +93,37 @@ const ManageUsers = () => {
             role: '',
           }
         });
-      } else {
-        alert('Failed to add user');
       }
     } catch (error) {
-      alert('An error occurred while adding the user');
+      alert(error.message || 'An error occurred while adding the user');
     }
   };
+
+  const handleLoadMore = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  const displayedUsers = users.slice(0, currentPage * usersPerPage);
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen space-y-8">
       <h3 className="text-3xl font-bold text-gray-800">Manage Users</h3>
       <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
         <h4 className="text-xl font-semibold text-gray-800 mb-4">Users</h4>
-        {users.length > 0 ? (
+        {displayedUsers.length > 0 ? (
           <ul className="divide-y divide-gray-200">
-            {users.map((user, index) => (
+            {displayedUsers.map((user, index) => (
               <li
                 key={index}
                 className="flex justify-between items-center py-4 hover:bg-gray-100 rounded-lg transition"
               >
                 <div>
                   <p className="font-semibold text-gray-700">{user.username}</p>
-                  <p className="text-sm text-gray-500">{user.email}</p>
+                  <p className="text-sm text-gray-500 ">{user.email}</p>
                   <p className="text-sm text-gray-500">Role: {user.role}</p>
                 </div>
                 <button
-                  onClick={() => handleDeleteUser(index)}
+                  onClick={() => handleDeleteUser (index)}
                   className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
                 >
                   Delete
@@ -142,6 +135,16 @@ const ManageUsers = () => {
           <p className="text-gray-500 text-center">No users found.</p>
         )}
       </div>
+      {displayedUsers.length < totalUsers && (
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={handleLoadMore}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300"
+          >
+            Load More
+          </button>
+        </div>
+      )}
       <div className="flex justify-end">
         <button
           onClick={() => setIsModalOpen(true)}
@@ -159,51 +162,51 @@ const ManageUsers = () => {
                 type="text"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Username"
-                value={newUser.username}
+                value={newUser .username}
                 onChange={(e) =>
-                  setNewUser({ ...newUser, username: e.target.value })
+                  setNewUser ({ ...newUser , username: e.target.value })
                 }
               />
               <input
                 type="email"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Email"
-                value={newUser.email}
+                value={newUser .email}
                 onChange={(e) =>
-                  setNewUser({ ...newUser, email: e.target.value })
+                  setNewUser ({ ...newUser , email: e.target.value })
                 }
               />
               <input
                 type="password"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Password"
-                value={newUser.password}
+                value={newUser .password}
                 onChange={(e) =>
-                  setNewUser({ ...newUser, password: e.target.value })
+                  setNewUser ({ ...newUser , password: e.target.value })
                 }
               />
               <select
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newUser.role}
+                value={newUser .role}
                 onChange={(e) =>
-                  setNewUser({ ...newUser, role: e.target.value })
+                  setNewUser ({ ...newUser , role: e.target.value })
                 }
               >
                 <option value="student">Student</option>
                 <option value="teacher">Teacher</option>
                 <option value="admin">Admin</option>
               </select>
-              {newUser.role === 'student' && (
+              {newUser .role === 'student' && (
                 <>
                   <input
                     type="date"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={newUser.studentAttributes.dob}
+                    value={newUser .studentAttributes.dob}
                     onChange={(e) =>
-                      setNewUser({
-                        ...newUser,
+                      setNewUser ({
+                        ...newUser ,
                         studentAttributes: {
-                          ...newUser.studentAttributes,
+                          ...newUser .studentAttributes,
                           dob: e.target.value,
                         },
                       })
@@ -213,12 +216,12 @@ const ManageUsers = () => {
                     type="text"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Roll No"
-                    value={newUser.studentAttributes.rollNo}
+                    value={newUser .studentAttributes.rollNo}
                     onChange={(e) =>
-                      setNewUser({
-                        ...newUser,
+                      setNewUser ({
+                        ...newUser ,
                         studentAttributes: {
-                          ...newUser.studentAttributes,
+                          ...newUser .studentAttributes,
                           rollNo: e.target.value,
                         },
                       })
@@ -228,26 +231,26 @@ const ManageUsers = () => {
                     type="number"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Semester"
-                    value={newUser.studentAttributes.semester}
+                    value={newUser .studentAttributes.semester}
                     onChange={(e) =>
-                      setNewUser({
-                        ...newUser,
+                      setNewUser ({
+                        ...newUser ,
                         studentAttributes: {
-                          ...newUser.studentAttributes,
+                          ...newUser .studentAttributes,
                           semester: e.target.value,
                         },
                       })
                     }
                   />
                   <input
-                    type="month"
+ type="month"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={newUser.studentAttributes.academicYear}
+                    value={newUser .studentAttributes.academicYear}
                     onChange={(e) =>
-                      setNewUser({
-                        ...newUser,
+                      setNewUser ({
+                        ...newUser ,
                         studentAttributes: {
-                          ...newUser.studentAttributes,
+                          ...newUser .studentAttributes,
                           academicYear: e.target.value,
                         },
                       })
@@ -255,12 +258,12 @@ const ManageUsers = () => {
                   />
                   <select
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={newUser.studentAttributes.currentStatus}
+                    value={newUser .studentAttributes.currentStatus}
                     onChange={(e) =>
-                      setNewUser({
-                        ...newUser,
+                      setNewUser ({
+                        ...newUser ,
                         studentAttributes: {
-                          ...newUser.studentAttributes,
+                          ...newUser .studentAttributes,
                           currentStatus: e.target.value,
                         },
                       })
@@ -271,41 +274,41 @@ const ManageUsers = () => {
                   </select>
                 </>
               )}
-              {newUser.role === 'teacher' && (
+              {newUser .role === 'teacher' && (
                 <input
                   type="text"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Name"
-                  value={newUser.teacherAttributes.name}
+                  value={newUser .teacherAttributes.name}
                   onChange={(e) =>
-                    setNewUser({
-                      ...newUser,
-                      teacherAttributes: { ...newUser.teacherAttributes, name: e.target.value },
+                    setNewUser ({
+                      ...newUser ,
+                      teacherAttributes: { ...newUser .teacherAttributes, name: e.target.value },
                     })
                   }
                 />
               )}
-              {newUser.role === 'admin' && (
+              {newUser .role === 'admin' && (
                 <>
                   <input
                     type="text"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Admin Name"
-                    value={newUser.adminAttributes.name}
+                    value={newUser .adminAttributes.name}
                     onChange={(e) =>
-                      setNewUser({
-                        ...newUser,
-                        adminAttributes: { ...newUser.adminAttributes, name: e.target.value },
+                      setNewUser ({
+                        ...newUser ,
+                        adminAttributes: { ...newUser .adminAttributes, name: e.target.value },
                       })
                     }
                   />
                   <select
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={newUser.adminAttributes.role}
+                    value={newUser .adminAttributes.role}
                     onChange={(e) =>
-                      setNewUser({
-                        ...newUser,
-                        adminAttributes: { ...newUser.adminAttributes, role: e.target.value },
+                      setNewUser ({
+                        ...newUser ,
+                        adminAttributes: { ...newUser .adminAttributes, role: e.target.value },
                       })
                     }
                   >
@@ -322,7 +325,7 @@ const ManageUsers = () => {
                   Cancel
                 </button>
                 <button
-                  onClick={handleAddUser}
+                  onClick={handleAddUser }
                   className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300"
                 >
                   Add User

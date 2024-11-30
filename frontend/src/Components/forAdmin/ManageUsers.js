@@ -61,17 +61,17 @@ const ManageUsers = () => {
 
   const handleAddUser  = async () => {
     if (
-      !newUser .username ||
-      !newUser .email ||
-      !newUser .password ||
-      !newUser .role
+      !newUser.username ||
+      !newUser.email ||
+      !newUser.password ||
+      !newUser.role
     ) {
       alert('All fields are required!');
       return;
     }
 
     try {
-      const result = await addUser (newUser ); // Use addUser  function
+      const result = await addUser (newUser); // Use addUser  function
       if (result) {
         // Refresh the user list after adding a new user
         const fetchedUsers = await fetchUsers();
@@ -172,7 +172,7 @@ const ManageUsers = () => {
                 type="text"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Username"
-                value={newUser .username}
+                value={newUser.username}
                 onChange={(e) =>
                   setNewUser ({ ...newUser , username: e.target.value })
                 }
@@ -181,7 +181,7 @@ const ManageUsers = () => {
                 type="email"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Email"
-                value={newUser .email}
+                value={newUser.email}
                 onChange={(e) =>
                   setNewUser ({ ...newUser , email: e.target.value })
                 }
@@ -190,14 +190,14 @@ const ManageUsers = () => {
                 type="password"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Password"
-                value={newUser .password}
+                value={newUser.password}
                 onChange={(e) =>
                   setNewUser ({ ...newUser , password: e.target.value })
                 }
               />
               <select
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={newUser .role}
+                value={newUser.role}
                 onChange={(e) =>
                   setNewUser ({ ...newUser , role: e.target.value })
                 }
@@ -206,17 +206,17 @@ const ManageUsers = () => {
                 <option value="teacher">Teacher</option>
                 <option value="admin">Admin</option>
               </select>
-              {newUser .role === 'student' && (
+              {newUser.role === 'student' && (
                 <>
                   <input
                     type="date"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={newUser .studentAttributes.dob}
+                    value={newUser.studentAttributes.dob}
                     onChange={(e) =>
                       setNewUser ({
                         ...newUser ,
                         studentAttributes: {
-                          ...newUser .studentAttributes,
+                          ...newUser.studentAttributes,
                           dob: e.target.value,
                         },
                       })
@@ -226,12 +226,12 @@ const ManageUsers = () => {
                     type="text"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Roll No"
-                    value={newUser .studentAttributes.rollNo}
+                    value={newUser.studentAttributes.rollNo}
                     onChange={(e) =>
                       setNewUser ({
                         ...newUser ,
                         studentAttributes: {
-                          ...newUser .studentAttributes,
+                          ...newUser.studentAttributes,
                           rollNo: e.target.value,
                         },
                       })
@@ -241,12 +241,12 @@ const ManageUsers = () => {
                     type="number"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Semester"
-                    value={newUser .studentAttributes.semester}
+                    value={newUser.studentAttributes.semester}
                     onChange={(e) =>
                       setNewUser ({
                         ...newUser ,
                         studentAttributes: {
-                          ...newUser .studentAttributes,
+                          ...newUser.studentAttributes,
                           semester: e.target.value,
                         },
                       })
@@ -255,12 +255,12 @@ const ManageUsers = () => {
                   <input
  type="month"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={newUser .studentAttributes.academicYear}
+                    value={newUser.studentAttributes.academicYear}
                     onChange={(e) =>
                       setNewUser ({
                         ...newUser ,
                         studentAttributes: {
-                          ...newUser .studentAttributes,
+                          ...newUser.studentAttributes,
                           academicYear: e.target.value,
                         },
                       })
@@ -268,12 +268,12 @@ const ManageUsers = () => {
                   />
                   <select
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={newUser .studentAttributes.currentStatus}
+                    value={newUser.studentAttributes.currentStatus}
                     onChange={(e) =>
                       setNewUser ({
                         ...newUser ,
                         studentAttributes: {
-                          ...newUser .studentAttributes,
+                          ...newUser.studentAttributes,
                           currentStatus: e.target.value,
                         },
                       })
@@ -284,41 +284,41 @@ const ManageUsers = () => {
                   </select>
                 </>
               )}
-              {newUser .role === 'teacher' && (
+              {newUser.role === 'teacher' && (
                 <input
                   type="text"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Name"
-                  value={newUser .teacherAttributes.name}
+                  value={newUser.teacherAttributes.name}
                   onChange={(e) =>
                     setNewUser ({
                       ...newUser ,
-                      teacherAttributes: { ...newUser .teacherAttributes, name: e.target.value },
+                      teacherAttributes: { ...newUser.teacherAttributes, name: e.target.value },
                     })
                   }
                 />
               )}
-              {newUser .role === 'admin' && (
+              {newUser.role === 'admin' && (
                 <>
                   <input
                     type="text"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Admin Name"
-                    value={newUser .adminAttributes.name}
+                    value={newUser.adminAttributes.name}
                     onChange={(e) =>
                       setNewUser ({
                         ...newUser ,
-                        adminAttributes: { ...newUser .adminAttributes, name: e.target.value },
+                        adminAttributes: { ...newUser.adminAttributes, name: e.target.value },
                       })
                     }
                   />
                   <select
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={newUser .adminAttributes.role}
+                    value={newUser.adminAttributes.role}
                     onChange={(e) =>
                       setNewUser ({
                         ...newUser ,
-                        adminAttributes: { ...newUser .adminAttributes, role: e.target.value },
+                        adminAttributes: { ...newUser.adminAttributes, role: e.target.value },
                       })
                     }
                   >

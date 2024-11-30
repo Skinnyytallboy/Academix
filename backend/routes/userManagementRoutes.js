@@ -36,8 +36,11 @@ router.get('/users', (req, res) => {
 
 //add user //also need to handle adding the user in their specific table
 router.post('/users', (req, res) => {
+
+  console.log('Incoming request data:', req.body);
   const { username, email, password, role, studentDetails, teacherDetails, adminDetails } = req.body;
 
+  
   // Check for required fields
   if (!username || !email || !password || !role) {
     return res.status(400).json({ status: 'error', message: 'All fields are required.' });
@@ -64,7 +67,6 @@ router.post('/users', (req, res) => {
     if (role === 'student') {
       // Validate and prepare student details
       if (
-        !studentDetails ||
         !studentDetails.name || 
         !studentDetails.dob || 
         !studentDetails.roll_no || 
@@ -92,7 +94,7 @@ router.post('/users', (req, res) => {
 
     if (role === 'teacher') {
       // Validate and prepare teacher details
-      if (!teacherDetails || !teacherDetails.name) {
+      if (!teacherDetails.name) {
         return res.status(400).json({ status: 'error', message: 'Missing teacher details.' });
       }
 
@@ -102,7 +104,7 @@ router.post('/users', (req, res) => {
 
     if (role === 'admin') {
       // Validate and prepare admin details
-      if (!adminDetails || !adminDetails.name || !adminDetails.role) {
+      if (!adminDetails.name || !adminDetails.role) {
         return res.status(400).json({ status: 'error', message: 'Missing admin details.' });
       }
 

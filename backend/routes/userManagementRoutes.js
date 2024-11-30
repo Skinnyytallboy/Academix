@@ -67,7 +67,6 @@ router.post('/users', (req, res) => {
     if (role === 'student') {
       // Validate and prepare student details
       if (
-        !studentDetails ||
         !studentDetails.name || 
         !studentDetails.dob || 
         !studentDetails.roll_no || 
@@ -95,7 +94,7 @@ router.post('/users', (req, res) => {
 
     if (role === 'teacher') {
       // Validate and prepare teacher details
-      if (!teacherDetails || !teacherDetails.name) {
+      if (!teacherDetails.name) {
         return res.status(400).json({ status: 'error', message: 'Missing teacher details.' });
       }
 
@@ -105,7 +104,7 @@ router.post('/users', (req, res) => {
 
     if (role === 'admin') {
       // Validate and prepare admin details
-      if (!adminDetails || !adminDetails.name || !adminDetails.role) {
+      if (!adminDetails.name || !adminDetails.role) {
         return res.status(400).json({ status: 'error', message: 'Missing admin details.' });
       }
 

@@ -147,7 +147,7 @@ router.delete('/users/delete', (req, res) => {
     }
     res.status(200).json({ status: 'success', message: 'User deleted successfully' });
   });
-});
+}); 
 
 
 module.exports = router;

@@ -1,25 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { fetchUsers } from '../../Services/api';
 
 const ManageUsers = () => {
-  const [users, setUsers] = useState([
-    { username: 'john_doe', email: 'john.doe@example.com', role: 'student' },
-    { username: 'jane_smith', email: 'jane.smith@example.com', role: 'teacher' },
-  ]);
+  const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newUser, setNewUser] = useState({
     username: '',
     email: '',
     password: '',
     role: 'student',
+    studentAttributes: {
+      dob: '',
+      rollNo: '',
+      semester: '',
+      academicYear: '',
+      currentStatus: 'Active',
+    },
+    teacherAttributes: {
+      name: '',
+    },
+    adminAttributes: {
+      name: '',
+      role: '',
+    }
   });
 
-  const handleDeleteUser = (index) => {
-    const updatedUsers = [...users];
-    updatedUsers.splice(index, 1);
-    setUsers(updatedUsers);
+  useEffect(() => {
+    const getUsers = async () => {
+      try {
+        const fetchedUsers = await fetchUsers();
+        if (fetchedUsers && Array.isArray(fetchedUsers)) {
+          setUsers(fetchedUsers);
+        } else {
+          setUsers([]);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        setUsers([]); // Set an empty array in case of error
+      }
+    };
+    getUsers();
+  }, []);
+
+  const handleDeleteUser = async (index) => {
+    const userId = users[index].user_id;  // Assuming each user has a user_id
+    const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const updatedUsers = [...users];
+      updatedUsers.splice(index, 1);
+      setUsers(updatedUsers);
+    } else {
+      alert('Failed to delete user');
+    }
   };
 
-  const handleAddUser = () => {
+  const handleAddUser = async () => {
     if (
       !newUser.username ||
       !newUser.email ||
@@ -30,36 +71,67 @@ const ManageUsers = () => {
       return;
     }
 
-    // Simulate adding the user (this would normally involve an API call)
-    setUsers([...users, newUser]);
-    setIsModalOpen(false);
-    setNewUser({ username: '', email: '', password: '', role: 'student' });
+    try {
+      const response = await fetch('http://localhost:5000/api/admin/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newUser),
+      });
+
+      if (response.ok) {
+        // Refresh the user list after adding a new user
+        const fetchedUsers = await fetchUsers();
+        setUsers(fetchedUsers);
+        setIsModalOpen(false);
+        setNewUser({
+          username: '',
+          email: '',
+          password: '',
+          role: 'student',
+          studentAttributes: {
+            dob: '',
+            rollNo: '',
+            semester: '',
+            academicYear: '',
+            currentStatus: 'Active',
+          },
+          teacherAttributes: {
+            name: '',
+          },
+          adminAttributes: {
+            name: '',
+            role: '',
+          }
+        });
+      } else {
+        alert('Failed to add user');
+      }
+    } catch (error) {
+      alert('An error occurred while adding the user');
+    }
   };
-
   return (
-    <div className="p-6 bg-gray-100 min-h-screen space-y-8">
-      <h3 className="text-2xl font-bold text-gray-800">Manage Users</h3>
-
-      {/* User List */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h4 className="text-lg font-semibold text-gray-800 mb-4">Users</h4>
+    <div className="p-6 bg-gray-50 min-h-screen space-y-8">
+      <h3 className="text-3xl font-bold text-gray-800">Manage Users</h3>
+      <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
+        <h4 className="text-xl font-semibold text-gray-800 mb-4">Users</h4>
         {users.length > 0 ? (
           <ul className="divide-y divide-gray-200">
             {users.map((user, index) => (
               <li
                 key={index}
-                className="flex justify-between items-center py-4"
+                className="flex justify-between items-center py-4 hover:bg-gray-100 rounded-lg transition"
               >
                 <div>
-                  <p className="font-semibold text-gray-700">
-                    {user.username}
-                  </p>
+                  <p className="font-semibold text-gray-700">{user.username}</p>
                   <p className="text-sm text-gray-500">{user.email}</p>
                   <p className="text-sm text-gray-500">Role: {user.role}</p>
                 </div>
                 <button
                   onClick={() => handleDeleteUser(index)}
-                  className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition duration-300"
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
                 >
                   Delete
                 </button>
@@ -70,24 +142,18 @@ const ManageUsers = () => {
           <p className="text-gray-500 text-center">No users found.</p>
         )}
       </div>
-
-      {/* Add User Button */}
       <div className="flex justify-end">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300"
         >
           Add User
         </button>
       </div>
-
-      {/* Add User Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-            <h4 className="text-lg font-semibold text-gray-800 mb-4">
-              Add New User
-            </h4>
+          <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md transition-all transform scale-105">
+            <h4 className="text-xl font-semibold text-gray-800 mb-6">Add New User</h4>
             <div className="space-y-4">
               <input
                 type="text"
@@ -127,20 +193,141 @@ const ManageUsers = () => {
                 <option value="teacher">Teacher</option>
                 <option value="admin">Admin</option>
               </select>
-            </div>
-            <div className="mt-6 flex justify-end space-x-4">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAddUser}
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
-              >
-                Add User
-              </button>
+              {newUser.role === 'student' && (
+                <>
+                  <input
+                    type="date"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={newUser.studentAttributes.dob}
+                    onChange={(e) =>
+                      setNewUser({
+                        ...newUser,
+                        studentAttributes: {
+                          ...newUser.studentAttributes,
+                          dob: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                  <input
+                    type="text"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Roll No"
+                    value={newUser.studentAttributes.rollNo}
+                    onChange={(e) =>
+                      setNewUser({
+                        ...newUser,
+                        studentAttributes: {
+                          ...newUser.studentAttributes,
+                          rollNo: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                  <input
+                    type="number"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Semester"
+                    value={newUser.studentAttributes.semester}
+                    onChange={(e) =>
+                      setNewUser({
+                        ...newUser,
+                        studentAttributes: {
+                          ...newUser.studentAttributes,
+                          semester: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                  <input
+                    type="month"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={newUser.studentAttributes.academicYear}
+                    onChange={(e) =>
+                      setNewUser({
+                        ...newUser,
+                        studentAttributes: {
+                          ...newUser.studentAttributes,
+                          academicYear: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                  <select
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={newUser.studentAttributes.currentStatus}
+                    onChange={(e) =>
+                      setNewUser({
+                        ...newUser,
+                        studentAttributes: {
+                          ...newUser.studentAttributes,
+                          currentStatus: e.target.value,
+                        },
+                      })
+                    }
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </>
+              )}
+              {newUser.role === 'teacher' && (
+                <input
+                  type="text"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Name"
+                  value={newUser.teacherAttributes.name}
+                  onChange={(e) =>
+                    setNewUser({
+                      ...newUser,
+                      teacherAttributes: { ...newUser.teacherAttributes, name: e.target.value },
+                    })
+                  }
+                />
+              )}
+              {newUser.role === 'admin' && (
+                <>
+                  <input
+                    type="text"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Admin Name"
+                    value={newUser.adminAttributes.name}
+                    onChange={(e) =>
+                      setNewUser({
+                        ...newUser,
+                        adminAttributes: { ...newUser.adminAttributes, name: e.target.value },
+                      })
+                    }
+                  />
+                  <select
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={newUser.adminAttributes.role}
+                    onChange={(e) =>
+                      setNewUser({
+                        ...newUser,
+                        adminAttributes: { ...newUser.adminAttributes, role: e.target.value },
+                      })
+                    }
+                  >
+                    <option value="super">Super Admin</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </>
+              )}
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="text-gray-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition duration-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddUser}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300"
+                >
+                  Add User
+                </button>
+              </div>
             </div>
           </div>
         </div>

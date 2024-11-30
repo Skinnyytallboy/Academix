@@ -5,6 +5,7 @@ const connection = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const countRoutes = require('./routes/countRoutes');
 const teacherRoutes = require('./routes/teacherRoutes');
+const userManagmentRoutes = require('./routes/userManagementRoutes');
 
 const app = express();
 app.use(cors());
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use('/api', authRoutes);       
 app.use('/api/count', countRoutes);
 app.use('/api/teacher', teacherRoutes); 
+app.use('/api/admin', userManagmentRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });

@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const connection = require('../config/db');
 
-//display all users //working
+//display all users 
 router.get('/users', (req, res) => {
   // Query to get all users
   const query = `

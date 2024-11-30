@@ -19,7 +19,7 @@ export const loginUser = async (email, password) => {
 };
 
 
-
+//admin dashboard analytics
 export const getData = async () => {
   try {
     const response = await fetch('http://localhost:5000/api/count');  // Endpoint for all data

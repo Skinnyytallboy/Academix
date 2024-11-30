@@ -8,14 +8,26 @@ router.get('/', (req, res) => {
         teachers: 'SELECT COUNT(*) AS totalTeachers FROM Teacher',
         admins: 'SELECT COUNT(*) AS totalAdmins FROM Admin',
         courses: 'SELECT COUNT(*) AS totalCourses FROM Courses',
-        departments: 'SELECT COUNT(*) AS totalDepartments FROM Department',
+        studentStatus: `
+            SELECT 
+                current_status, COUNT(*) AS count 
+            FROM Student 
+            GROUP BY current_status
+        `,
+        professorCourses: `
+            SELECT 
+                Courses.course_name, COUNT(Teacher_Courses.teacher_id) AS professorsPerCourse
+            FROM Teacher_Courses
+            JOIN Courses ON Teacher_Courses.course_id = Courses.course_id
+            GROUP BY Courses.course_name
+        `,
     };
 
     const fetchData = (query) => {
         return new Promise((resolve, reject) => {
             connection.query(query, (err, results) => {
                 if (err) return reject(err);
-                resolve(results[0]);
+                resolve(results);
             });
         });
     };
@@ -26,15 +38,23 @@ router.get('/', (req, res) => {
         fetchData(queries.teachers),
         fetchData(queries.admins),
         fetchData(queries.courses),
-        fetchData(queries.departments),
+        fetchData(queries.studentStatus),
+        fetchData(queries.professorCourses),
     ])
-    .then(([students, teachers, admins, courses, departments]) => {
+    .then(([students, teachers, admins, courses, studentStatus, professorCourses]) => {
         const data = {
-            totalStudents: students.totalStudents,
-            totalTeachers: teachers.totalTeachers,
-            totalAdmins: admins.totalAdmins,
-            totalCourses: courses.totalCourses,
-            totalDepartments: departments.totalDepartments,
+            totalStudents: students[0].totalStudents,
+            totalTeachers: teachers[0].totalTeachers,
+            totalAdmins: admins[0].totalAdmins,
+            totalCourses: courses[0].totalCourses,
+            studentStatus: studentStatus.reduce((acc, status) => {
+                acc[status.current_status] = status.count;
+                return acc;
+            }, {}),
+            professorCourses: professorCourses.map(course => ({
+                courseName: course.course_name,
+                professorsPerCourse: course.professorsPerCourse,
+            })),
         };
         res.status(200).json({ status: 'success', data });
     })
@@ -42,7 +62,6 @@ router.get('/', (req, res) => {
         console.error('Error fetching data:', err);
         res.status(500).json({ status: 'error', message: 'Failed to fetch data' });
     });
-}
-);
+});
 
 module.exports = router;

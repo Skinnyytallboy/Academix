@@ -13,7 +13,7 @@ router.get('/courses', (req, res) => {
 
   // Query 1: Get all courses for the teacher
   const coursesQuery = `
-      SELECT course_id, course_name, credit_hours, announcements, content, description
+      SELECT course_id, course_name, announcements, content, description
       FROM Courses
       WHERE course_id IN (
           SELECT course_id

@@ -39,7 +39,8 @@ CREATE TABLE Courses (
     course_name VARCHAR(100) UNIQUE NOT NULL,
     credit_hours INT NOT NULL,
     announcements TEXT,
-    content TEXT
+    content TEXT,
+    description VARCHAR(255)
 );
 
 CREATE TABLE Teacher_Courses (

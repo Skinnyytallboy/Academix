@@ -5,7 +5,6 @@ import CourseList from '../Components/forStudent/CourseList';
 import Assignment from '../Components/forStudent/Assignment';
 import AssignmentCalendar from '../Components/forStudent/AssignmentCalendar';
 import SubmitAssignment from '../Components/forStudent/SubmitAssignment';
-import { useNavigate } from 'react-router-dom';
 
 const StudentDashboard = ({ user }) => {
   const [activeTab, setActiveTab] = useState('My Courses');
@@ -13,13 +12,13 @@ const StudentDashboard = ({ user }) => {
   const renderContent = () => {
       switch (activeTab) {
         case 'My Courses':
-          return <CourseList />;
+          return <CourseList user={user} />;
         case 'Assignments':
-          return <Assignment />;
+          return <Assignment user={user} />;
         case 'Calendar':
-          return <AssignmentCalendar />;
+          return <AssignmentCalendar user={user} />;
         case 'Submit Assignment':
-          return <SubmitAssignment />;
+          return <SubmitAssignment user={user} />;
         default:
           return <CourseList />;
       }

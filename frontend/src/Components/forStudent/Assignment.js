@@ -1,84 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { fetchAssignmentDetails } from '../../Services/api';
+import { ClipLoader } from 'react-spinners';
 
-const Assignment = () => {
+const Assignment = ({ user }) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [activeTab, setActiveTab] = useState('All');
+    const [assignments, setAssignments] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Dummy data based on the schema
-    const assignments = [
-        {
-            assignmentId: 1,
-            course: 'Operating Systems',
-            title: 'Deadlock Assignment',
-            description: 'Identify and resolve deadlock issues in a simulated OS.',
-            dueDate: '2024-12-05',
-            assignDate: '2024-11-01',
-            submissions: [
-                {
-                    studentId: 1,
-                    status: 'Not Submitted',
-                    submittedAt: null,
-                    fileUrl: null,
-                    plagiarismScore: 0.0,
-                    grade: null,
-                },
-            ],
-        },
-        {
-            assignmentId: 2,
-            course: 'Data Structures',
-            title: 'Binary Trees Task',
-            description: 'Implement a binary tree and perform depth-first search.',
-            dueDate: '2024-12-07',
-            assignDate: '2024-11-10',
-            submissions: [
-                {
-                    studentId: 1,
-                    status: 'Submitted',
-                    submittedAt: '2024-12-05',
-                    fileUrl: 'https://example.com/assignment2.pdf',
-                    plagiarismScore: 5.5,
-                    grade: 'A',
-                },
-            ],
-        },
-        {
-            assignmentId: 3,
-            course: 'Web Development',
-            title: 'Responsive Design Challenge',
-            description: 'Create a responsive webpage for a given design.',
-            dueDate: '2024-12-07',
-            assignDate: '2024-11-20',
-            submissions: [
-                {
-                    studentId: 1,
-                    status: 'Late',
-                    submittedAt: '2024-12-08',
-                    fileUrl: 'https://example.com/assignment3.pdf',
-                    plagiarismScore: 10.0,
-                    grade: 'B+',
-                },
-            ],
-        },
-        {
-            assignmentId: 4,
-            course: 'Operating Systems',
-            title: 'Process Synchronization Task',
-            description: 'Implement process synchronization in a multi-threaded environment.',
-            dueDate: '2024-12-10',
-            assignDate: '2024-11-15',
-            submissions: [
-                {
-                    studentId: 1,
-                    status: 'Not Submitted',
-                    submittedAt: null,
-                    fileUrl: null,
-                    plagiarismScore: 0.0,
-                    grade: null,
-                },
-            ],
-        },
-    ];
+    useEffect(() => {
+        const fetchAssignments = async () => {
+            try {
+                const data = await fetchAssignmentDetails();
+                setAssignments(data.assignments);
+                setLoading(false);
+            } catch (error) {
+                setLoading(false);
+            }
+        };
+        fetchAssignments();
+    }, [user.id]);
 
     const courses = ['All', ...new Set(assignments.map((assignment) => assignment.course))];
 
@@ -112,7 +53,11 @@ const Assignment = () => {
                 ))}
             </div>
             <div>
-                {filteredAssignments.length > 0 ? (
+                {loading ? (
+                    <div className="flex justify-center items-center">
+                        <ClipLoader color="#4c6ef5" size={50} />
+                    </div>
+                ) : filteredAssignments.length > 0 ? (
                     <ul className="space-y-4">
                         {filteredAssignments.map((assignment, index) => (
                             <li
@@ -128,32 +73,43 @@ const Assignment = () => {
                                 <p className="text-sm text-gray-600">
                                     <strong>Description:</strong> {assignment.description}
                                 </p>
-                                {assignment.submissions.map((submission, idx) => (
-                                    <div key={idx}>
-                                        <p className="text-sm text-gray-600">
-                                            <strong>Status:</strong> {submission.status}
-                                        </p>
-                                        {submission.status === 'Submitted' && (
-                                            <>
-                                                <p className="text-sm text-gray-600">
-                                                    <strong>Plagiarism Score:</strong> {submission.plagiarismScore}%
-                                                </p>
-                                                <p className="text-sm text-gray-600">
-                                                    <strong>Grade:</strong> {submission.grade}
-                                                </p>
-                                                <p className="text-sm text-gray-600">
-                                                    <strong>File:</strong> 
-                                                    <a href={submission.fileUrl} className="text-indigo-500 hover:underline" target="_blank" rel="noopener noreferrer">
-                                                        View Assignment
-                                                    </a>
-                                                </p>
-                                            </>
-                                        )}
-                                        {submission.status === 'Late' && (
-                                            <p className="text-sm text-red-600">This assignment was submitted late.</p>
-                                        )}
-                                    </div>
-                                ))}
+                                {assignment.submissions.length === 0 ? (
+                                    <p className="text-sm text-gray-600">No submissions yet.</p>
+                                ) : (
+                                    assignment.submissions.map((submission, idx) => (
+                                        <div key={idx}>
+                                            <p className="text-sm text-gray-600">
+                                                <strong>Status:</strong> 
+                                                {submission.status === 'Submitted'
+                                                    ? 'Submitted'
+                                                    : 'Not Submitted'}
+                                            </p>
+                                            {submission.status === 'Submitted' && (
+                                                <>
+                                                    {submission.plagiarismScore !== undefined && (
+                                                        <p className="text-sm text-gray-600">
+                                                            <strong>Plagiarism Score:</strong> {submission.plagiarismScore}%
+                                                        </p>
+                                                    )}
+                                                    <p className="text-sm text-gray-600">
+                                                        <strong>Grade:</strong> {submission.grade || 'Not Graded'}
+                                                    </p>
+                                                    {submission.fileUrl && (
+                                                        <p className="text-sm text-gray-600">
+                                                            <strong>File:</strong>
+                                                            <a href={submission.fileUrl} className="text-indigo-500 hover:underline" target="_blank" rel="noopener noreferrer">
+                                                                View Assignment
+                                                            </a>
+                                                        </p>
+                                                    )}
+                                                </>
+                                            )}
+                                            {submission.status === 'Late' && (
+                                                <p className="text-sm text-red-600">This assignment was submitted late.</p>
+                                            )}
+                                        </div>
+                                    ))
+                                )}
                             </li>
                         ))}
                     </ul>

@@ -1,30 +1,73 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { fetchNotSubmittedAssignments, submitStudentAssignment } from '../../Services/api';
 
-const SubmitAssignment = () => {
-    const assignments = [
-        { id: 1, title: 'Data Structures Assignment 1' },
-        { id: 2, title: 'Operating Systems Assignment 2' },
-        { id: 3, title: 'Database Systems Assignment 3' },
-    ];
-
-    const [selectedAssignment, setSelectedAssignment] = useState(assignments[0].id);
+const SubmitAssignment = ({ user }) => {
+    const [assignments, setAssignments] = useState([]);
+    const [selectedAssignment, setSelectedAssignment] = useState(null);
     const [submissionDescription, setSubmissionDescription] = useState('');
     const [file, setFile] = useState(null);
     const [attachmentLink, setAttachmentLink] = useState('');
+    const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchAssignments = async () => {
+            setLoading(true);
+            try {
+                const data = await fetchNotSubmittedAssignments(user.id);
+                if (data && data.availableAssignments) {
+                    setAssignments(data.availableAssignments);
+                    if (data.availableAssignments.length > 0) {
+                        setSelectedAssignment(data.availableAssignments[0].assignment_id);
+                    }
+                } else {
+                    setMessage('Failed to fetch assignments');
+                }
+            } catch (error) {
+                setMessage('An error occurred while fetching assignments');
+            }
+            setLoading(false);
+        };
+        fetchAssignments();
+    }, [user]);
 
     const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        setFile(file);
+        const selectedFile = e.target.files[0];
+        setFile(selectedFile);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Submitting Assignment:', {
-            assignment: assignments.find((assignment) => assignment.id === selectedAssignment).title,
-            description: submissionDescription,
-            file: file ? file.name : 'No file uploaded',
-            attachmentLink: attachmentLink,
-        });
+        if (!selectedAssignment) {
+            setMessage('Please select an assignment.');
+            return;
+        }
+        if (!file && !attachmentLink) {
+            setMessage('Please provide a file or a link.');
+            return;
+        }
+        const submissionContent = submissionDescription;
+        let fileUrl = null;
+        if (file) {
+            fileUrl = URL.createObjectURL(file);
+        } else if (attachmentLink) {
+            fileUrl = attachmentLink;
+        }
+        const assignmentData = {
+            assignmentId: selectedAssignment,
+            userID: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).userId : user.id,
+            description: submissionContent,
+            submissionContent,
+            fileUrl,
+        };
+        setLoading(true);
+        try {
+            const response = await submitStudentAssignment(assignmentData);
+            setMessage(response.message || (fileUrl ? 'Assignment with file submitted successfully!' : 'Assignment submitted successfully!'));
+        } catch (error) {
+            setMessage('Error submitting assignment. Please try again.');
+        }
+        setLoading(false);
         setSubmissionDescription('');
         setFile(null);
         setAttachmentLink('');
@@ -39,12 +82,12 @@ const SubmitAssignment = () => {
                     <div className="relative">
                         <select
                             id="assignment"
-                            value={selectedAssignment}
+                            value={selectedAssignment || ''}
                             onChange={(e) => setSelectedAssignment(Number(e.target.value))}
                             className="mt-1 p-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none"
                         >
                             {assignments.map((assignment) => (
-                                <option key={assignment.id} value={assignment.id}>
+                                <option key={assignment.assignment_id} value={assignment.assignment_id}>
                                     {assignment.title}
                                 </option>
                             ))}
@@ -115,10 +158,12 @@ const SubmitAssignment = () => {
                     <button
                         type="submit"
                         className="w-full bg-indigo-600 text-white p-2 rounded-md hover:bg-indigo-700 transition"
+                        disabled={loading}
                     >
-                        Submit Assignment
+                        {loading ? 'Submitting...' : 'Submit Assignment'}
                     </button>
                 </div>
+                {message && <div className="text-sm text-red-600">{message}</div>}
             </form>
         </div>
     );

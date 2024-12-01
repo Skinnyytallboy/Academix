@@ -421,17 +421,26 @@ export const removeStudentFromCourse = async (courseId, studentId) => {
 // Fetch all Courses
 export const fetchCoursesProf = async () => {
   try {
+    const user = JSON.parse(localStorage.getItem('user')); // Retrieve user from localStorage
+    const user_id = user?.userId; // Extract user_id
+
+    if (!user_id) {
+      throw new Error('User ID not found in storage.');
+    }
+
     console.log('Fetching courses...');
-    const response = await fetch('http://localhost:5000/api/gradeSubmission/courses', {
+    const response = await fetch(`http://localhost:5000/api/gradeSubmission/courses`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json',
+      teacherId: user_id
+    }
     });
 
     if (response.ok) {
       const datacourses = await response.json();
-      return datacourses;  // Return the courses array
+      return datacourses; // Return the courses array
     } else if (response.status === 204) {
-      return [];  // Return an empty array if no courses are found
+      return []; // Return an empty array if no courses are found
     } else {
       throw new Error('Failed to fetch courses');
     }
@@ -439,6 +448,7 @@ export const fetchCoursesProf = async () => {
     throw new Error(`An error occurred while fetching courses: ${error.message}`);
   }
 };
+
 
 
 

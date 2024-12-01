@@ -3,9 +3,20 @@ const router = express.Router();
 const connection = require('../config/db');
 
 router.get('/courses', (req, res) => {
-  const query = `SELECT course_id, course_name FROM Courses`;
+  const user_id = req.headers['teacherid']; // Retrieve user_id from the query parameters
 
-  connection.query(query, (err, results) => {
+  if (!user_id) {
+    return res.status(400).json({ status: 'error', message: 'Missing user ID.' });
+  }
+
+  const query = `
+    SELECT c.course_id, c.course_name 
+    FROM Courses c
+    INNER JOIN Teacher_Courses tc ON c.course_id = tc.course_id
+    WHERE tc.teacher_id = ?
+  `;
+
+  connection.query(query, [user_id], (err, results) => {
     if (err) {
       return res.status(500).json({ status: 'error', message: 'Internal server error.' });
     }

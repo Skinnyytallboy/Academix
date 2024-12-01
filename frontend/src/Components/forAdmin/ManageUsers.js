@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { fetchUsers, addUser , deleteUser  } from '../../Services/api';
+import { ClipLoader } from 'react-spinners';
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newUser , setNewUser ] = useState({
     username: '',
@@ -26,10 +28,11 @@ const ManageUsers = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
-  const usersPerPage = 10;
+  const usersPerPage = 5;
 
   useEffect(() => {
     const fetchUsersData = async () => {
+      setIsLoading(true);
       const response = await fetchUsers();
       if (response.status === "success") {
         setUsers(response.users);
@@ -37,6 +40,7 @@ const ManageUsers = () => {
       } else {
         alert('Failed to fetch users');
       }
+      setIsLoading(false);
     };
     fetchUsersData();
   }, []);
@@ -108,7 +112,12 @@ const ManageUsers = () => {
   return (
     <div className="p-6 bg-gray-50 min-h-screen space-y-8">
       <h3 className="text-3xl font-bold text-gray-800">Manage Users</h3>
-      <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
+      {isLoading && (
+        <div className="flex justify-center items-center my-6">
+          <ClipLoader color="#3b82f6" loading={isLoading} size={50} />
+        </div>
+      )}
+      {!isLoading && (<div className="bg-white rounded-lg shadow-lg p-6 mt-6">
         <h4 className="text-xl font-semibold text-gray-800 mb-4">Users</h4>
         {displayedUsers.length > 0 ? (
           <ul className="divide-y divide-gray-200">
@@ -135,6 +144,7 @@ const ManageUsers = () => {
           <p className="text-gray-500 text-center">No users found.</p>
         )}
       </div>
+      )}
       {displayedUsers.length < totalUsers && (
         <div className="flex justify-center mt-4">
           <button

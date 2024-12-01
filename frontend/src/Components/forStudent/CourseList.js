@@ -27,8 +27,8 @@ const CourseList = ({ user }) => {
     fetchCourses();
   }, [user]);
 
-  const handleCourseClick = (courseId) => {
-    navigate(`/course/${courseId}`);
+  const handleCourseClick = (course_id) => {
+    navigate(`/course/${course_id}`);
   };
 
   const categorizeCourses = (status) => courses.filter((course) => course.status === status);
@@ -43,7 +43,7 @@ const CourseList = ({ user }) => {
       {courseList.map((course) => (
         <li
           key={course.id}
-          onClick={clickable ? () => handleCourseClick(course.id) : null}
+          onClick={clickable ? () => handleCourseClick(course.course_id) : null}
           className={`bg-white p-6 rounded-lg shadow-lg transition-transform transform ${
             clickable ? 'cursor-pointer hover:scale-105 hover:shadow-indigo-300' : ''
           }`}

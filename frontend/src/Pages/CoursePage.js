@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const CoursePage = () => {
+const CoursePage = ({ user }) => {
   const { courseId } = useParams();
   const navigate = useNavigate(); 
 

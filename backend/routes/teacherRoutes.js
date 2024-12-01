@@ -2,132 +2,40 @@ const express = require('express');
 const router = express.Router();
 const connection = require('../config/db');
 
-router.get('/courses', (req, res) => {
+router.get('/courses', async (req, res) => {
+  try {
+    const userID = req.headers['user-id'];
+    if (!userID) {
+      return res.status(400).json({ error: 'UserID is required.' });
+    }
 
-  const teacherId = req.headers['teacherid'];
-  if (!teacherId) {
-      return res.status(400).json({ status: 'error', message: 'Missing teacherId in the request.' });
-  }
-
-  // Query 1: Get all courses for the teacher
-  const coursesQuery = `
-      SELECT course_id, course_name, announcements, content, description
-      FROM Courses
-      WHERE course_id IN (
-          SELECT course_id
-          FROM Teacher_Courses
-          WHERE teacher_id = ?
-      )
-  `;
-
-  connection.query(coursesQuery, [teacherId], (err, courses) => {
+    const query = `
+        SELECT 
+            c.course_id, 
+            c.course_name, 
+            c.description
+        FROM Courses c
+        JOIN Teacher_Courses e ON c.course_id = e.course_id
+        JOIN Teacher s ON e.teacher_id = s.teacher_id
+        JOIN User u ON s.teacher_id = u.user_id
+        WHERE u.user_id = ?;
+    `;
+    connection.query(query, [userID], (err, results) => {  // Changed db.query to connection.query
       if (err) {
-          return res.status(500).json({ status: 'error', message: 'Internal server error.' });
+        console.error('Database query error:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
       }
 
-      if (courses.length === 0) {
-          return res.status(404).json({ status: 'error', message: 'No courses found for this teacher.' });
+      if (results.length === 0) {
+        return res.status(404).json({ message: 'No available courses found for the user.' });
       }
 
-      const courseIds = courses.map(course => course.course_id); // Extract course IDs
-
-      // Query 2: Get enrolled students for the courses (including their names)
-      const enrollmentQuery = `
-          SELECT e.course_id, e.student_id, s.name AS student_name
-          FROM Enrollment e
-          JOIN Student s ON e.student_id = s.student_id
-          WHERE e.course_id IN (?)
-      `;
-
-      connection.query(enrollmentQuery, [courseIds], (err, enrollments) => {
-          if (err) {
-              return res.status(500).json({ status: 'error', message: 'Internal server error.' });
-          }
-
-          // Query 3: Get chat messages for the courses
-          const chatQuery = `
-              SELECT course_id, chat_id, sender_id, message, sent_at, video_call_url
-              FROM Chat
-              WHERE course_id IN (?)
-          `;
-
-          connection.query(chatQuery, [courseIds], (err, chats) => {
-              if (err) {
-                  return res.status(500).json({ status: 'error', message: 'Internal server error.' });
-              }
-
-              // Query 4: Get teachers for the courses (including their names)
-              const teacherQuery = `
-                  SELECT tc.course_id, t.teacher_id, t.name AS teacher_name
-                  FROM Teacher_Courses tc
-                  INNER JOIN Teacher t ON tc.teacher_id = t.teacher_id
-                  WHERE tc.course_id IN (?)
-              `;
-
-              connection.query(teacherQuery, [courseIds], (err, teachers) => {
-                  if (err) {
-                      return res.status(500).json({ status: 'error', message: 'Internal server error.' });
-                  }
-
-                  // Compile the results into a single JSON object
-                  const response = courses.map(course => {
-                      return {
-                          ...course,
-                          enrolled_students: enrollments.filter(e => e.course_id === course.course_id).map(e => e.student_name),
-                          chat_messages: chats.filter(c => c.course_id === course.course_id),
-                          teachers: teachers.filter(t => t.course_id === course.course_id).map(t => t.teacher_name)
-                      };
-                  });
-
-                  res.status(200).json({ status: 'success', courses: response });
-              });
-          });
-      });
-  });
+      res.status(200).json({ status: 'success', availableCourses: results });
+    });
+  } catch (error) {
+    console.error('Server error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 module.exports = router;
-
-// router.get('/courses', (req, res) => {
-//     console.log('Headers received:', req.headers); // Log all headers
-
-//     const teacherId = req.headers['teacherid']; // Use lowercase key for headers
-//     console.log('Extracted teacherId:', teacherId); // Log extracted teacherId
-
-//     if (!teacherId) {
-//         console.log('No teacherId found in headers.');
-//         return res.status(400).json({ status: 'error', message: 'Missing teacherId in the request.' });
-//     }
-
-//     const query = `
-//       SELECT 
-//         c.course_id, 
-//         c.course_name, 
-//         c.credit_hours, 
-//       FROM 
-//         Teacher_Courses tc
-//       INNER JOIN 
-//         Courses c ON tc.course_id = c.course_id
-//       WHERE 
-//         tc.teacher_id = ?
-//     `;
-//     console.log('Executing query with teacherId:', teacherId); // Log query execution
-
-//     connection.query(query, [teacherId], (err, results) => {
-//         if (err) {
-//             console.error('Database error:', err); // Log database errors
-//             return res.status(500).json({ status: 'error', message: 'Internal server error.' });
-//         }
-
-//         if (results.length === 0) {
-//             console.log('No courses found for teacherId:', teacherId);
-//             return res.status(404).json({ status: 'error', message: 'No courses found for this teacher.' });
-//         }
-
-//         console.log('Query successful, results:', results); // Log query results
-//         res.status(200).json({
-//             status: 'success',
-//             courses: results,
-//         });
-//     });
-// });

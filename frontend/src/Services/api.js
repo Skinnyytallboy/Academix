@@ -35,22 +35,11 @@ export const getCount = async () => {
 
 export const getTeacherCourses = async () => {
   try {
-    // Retrieve user data from localStorage
-    const storedUser = localStorage.getItem('user');
-    const user = storedUser ? JSON.parse(storedUser) : null;
-
-    if (!user || !user.userId) {
-      throw new Error('No user or userId found. Please log in first.');
-    }
-
-    const teacherId = user.userId; // Extract the teacherId
-
-    // Make a request to the server with teacherId
     const response = await fetch('http://localhost:5000/api/teacher/courses', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'teacherId': teacherId, // Send teacherId in headers
+        'user-id': localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).userId : null,
       },
     });
 
@@ -59,7 +48,7 @@ export const getTeacherCourses = async () => {
     }
 
     const data = await response.json();
-    return data; // Return the fetched courses
+    return data;
   } catch (error) {
     console.error('Error fetching teacher courses:', error);
     return { status: 'error', message: error.message }; // Handle error

@@ -1,37 +1,101 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { ClipLoader } from 'react-spinners';
+import { fetchStudentCourses } from '../../Services/api';
 import { useNavigate } from 'react-router-dom';
 
-const CourseList = () => {
+const CourseList = ({ user }) => {
   const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const courses = [
-    { id: 1, name: 'Data Structures', description: 'Learn about arrays, stacks, queues, and more.' },
-    { id: 2, name: 'Operating Systems', description: 'Introduction to OS concepts, including memory management.' },
-    { id: 3, name: 'Database Systems', description: 'Explore the basics of database management and SQL.' },
-  ];
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchStudentCourses(user.id);
+        if (data && data.availableCourses) {
+          setCourses(data.availableCourses); // Set the availableCourses directly
+        } else {
+          throw new Error('No courses found');
+        }
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, [user]);
 
-  const handleCourseClick = (courseId) => {
-    navigate(`/course/${courseId}`);
+  const handleCourseClick = (course_id) => {
+    navigate(`/course/${course_id}`);
   };
 
+  const categorizeCourses = (status) => courses.filter((course) => course.status === status);
+
+  const availableCourses = categorizeCourses('Incomplete');
+  const withdrawnCourses = categorizeCourses('Withdrawn');
+  const completedCourses = categorizeCourses('Completed');
+  const failedCourses = categorizeCourses('Failed');
+
+  const renderCourseList = (courseList, clickable = false) => (
+    <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {courseList.map((course) => (
+        <li
+          key={course.id}
+          onClick={clickable ? () => handleCourseClick(course.course_id) : null}
+          className={`bg-white p-6 rounded-lg shadow-lg transition-transform transform ${
+            clickable ? 'cursor-pointer hover:scale-105 hover:shadow-indigo-300' : ''
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <h3 className="text-2xl font-semibold text-indigo-600">{course.course_name}</h3>
+            {clickable && <span className="bg-indigo-100 text-indigo-600 py-1 px-4 rounded-full text-sm">Explore</span>}
+          </div>
+          <p className="text-gray-700 mt-3">{course.description}</p>
+          {course.grade && (
+            <p className="mt-3 text-sm font-medium text-gray-500">Grade: {course.grade}</p>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <ClipLoader color="#4F46E5" loading={loading} size={50} />
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <h2 className="text-3xl font-semibold mb-8 text-center text-indigo-600">Available Courses</h2>
-      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {courses.map((course) => (
-          <li
-            key={course.id}
-            onClick={() => handleCourseClick(course.id)}
-            className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl cursor-pointer transition-transform transform hover:scale-105 hover:shadow-indigo-300"
-          >
-            <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-semibold text-indigo-600">{course.name}</h3>
-              <span className="bg-indigo-100 text-indigo-600 py-1 px-4 rounded-full text-sm">Explore</span>
-            </div>
-            <p className="text-gray-700 mt-3">{course.description}</p>
-          </li>
-        ))}
-      </ul>
+    <div className="max-w-6xl mx-auto p-2">
+      <h2 className="text-3xl font-semibold mb-2 text-center text-indigo-600">Your Courses</h2>
+      {availableCourses.length > 0 && (
+        <div className="mb-4">
+          <h3 className="text-2xl font-semibold text-indigo-500 mb-4">Available Courses</h3>
+          {renderCourseList(availableCourses, true)}
+        </div>
+      )}
+      {withdrawnCourses.length > 0 && (
+        <div className="mb-4">
+          <h3 className="text-2xl font-semibold text-red-500 mb-4">Withdrawn Courses</h3>
+          {renderCourseList(withdrawnCourses)}
+        </div>
+      )}
+      {completedCourses.length > 0 && (
+        <div className="mb-4">
+          <h3 className="text-2xl font-semibold text-green-500 mb-4">Completed Courses</h3>
+          {renderCourseList(completedCourses)}
+        </div>
+      )}
+      {failedCourses.length > 0 && (
+        <div>
+          <h3 className="text-2xl font-semibold text-gray-500 mb-4">Failed Courses</h3>
+          {renderCourseList(failedCourses)}
+        </div>
+      )}
     </div>
   );
 };

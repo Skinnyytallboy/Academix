@@ -12,7 +12,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   const tabs = [
     { name: 'Manage Users', icon: <FaUserFriends /> },
     { name: 'Analytics', icon: <FaChartPie /> },
-    { name: 'Role Management', icon: <FaUserCog /> },
+    { name: 'Assign Students', icon: <FaUserCog /> },
     { name: 'Course Management', icon: <FaUserCog /> },
   ];
 

@@ -19,18 +19,17 @@ export const loginUser = async (email, password) => {
 };
 
 
-//admin dashboard analytics
-export const getData = async () => {
+export const getCount = async () => {
   try {
-    const response = await fetch('http://localhost:5000/api/count');  // Endpoint for all data
-    if (!response.ok) {  // Check if the response status is OK
+    const response = await fetch('http://localhost:5000/api/count');
+    if (!response.ok) {
       throw new Error('Failed to fetch all data')
     }
-    const allData = await response.json();  // Parse the JSON response
-    return allData;  // Return the fetched data (you can use it in your UI)
+    const allData = await response.json();
+    return allData;
   } catch (error) {
     console.error('Error fetching all data:', error);
-    return { status: 'error', message: 'Failed to fetch all data' };  // Handle error
+    return { status: 'error', message: 'Failed to fetch all data' };
   }
 };
 
@@ -134,3 +133,206 @@ export const deleteUser = async (userId) => {
   }
 };
 
+export const fetchCourses = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/api/Acourse/existingCourses', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const dataC = await response.json();
+      return dataC;
+    } else {
+      throw new Error(`Failed to fetch courses: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error(error);  // Optionally log error
+    throw new Error('An error occurred while fetching courses');
+  }
+};
+
+export const fetchProfessors = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/api/Acourse/allProfessors', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const dataP = await response.json();
+      return dataP;
+    } else {
+      throw new Error(`Failed to fetch professors: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error(error);  // Optionally log error
+    throw new Error('An error occurred while fetching professors');
+  }
+};
+
+export const addCourseToDatabase = async (newCourse) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/Acourse/addCourse', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newCourse),
+    });
+    if (response.ok) {
+      const result = await response.json();
+      return result;
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to add course');
+    }
+  } catch (error) {
+    throw new Error('An error occurred while adding the course');
+  }
+};
+
+export const deleteCourseFromDatabase = async (courseId) => {
+  try {
+    const response = await fetch(`http://localhost:5000/api/Acourse/deleteCourse`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'courseid' : courseId,
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      return result;
+    } else {
+      throw new Error('Failed to delete course');
+    }
+  } catch (error) {
+    throw new Error('An error occurred while deleting the course');
+  }
+};
+
+export const fetchStudentCourses = async (user) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/student/courses', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-id': localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).userId : user,
+      },
+    });
+    const responseText = await response.text();
+    if (response.ok) {
+      const data = JSON.parse(responseText);
+      if (data.status === 'success') {
+        return data;
+      } else {
+        throw new Error('Failed to fetch available courses');
+      }
+    } else {
+      throw new Error('Failed to fetch student courses');
+    }
+  } catch (error) {
+    throw new Error('An error occurred while fetching student courses');
+  }
+};
+
+export const fetchNotSubmittedAssignments = async (user) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/student/pendingAssignments', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-id': localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).userId : user,
+      },
+    });
+    const responseText = await response.text();
+    if (response.ok) {
+      const data = JSON.parse(responseText);
+      if (data.status === 'success') {
+        return data;
+      } else {
+        throw new Error('Failed to fetch pending assignments');
+      }
+    }
+  } catch (error) {
+    throw new Error('An error occurred while fetching assignments');
+  }
+};
+
+export const submitStudentAssignment = async (assignmentData) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/student/submitAssignment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(assignmentData),
+    });
+    console.log('Request body assignmnet:', assignmentData);
+
+    if (response.ok) {
+      const result = await response.json();
+      return result;
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to submit assignment');
+    }
+  } catch (error) {
+    console.error('Submission error:', error);
+    throw new Error('An error occurred while submitting the assignment');
+  }
+};
+
+export const fetchAllStudentAssignments = async (user) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/student/fetchAllStudentAssignments', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-id': localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).userId : user,
+      },
+    });
+    const responseText = await response.text();
+    if (response.ok) {
+      const data = JSON.parse(responseText);
+      if (data.status === 'success') {
+        return data;
+      } else {
+        throw new Error('Failed to fetch student assignments');
+      }
+    }
+  }
+  catch (error) {
+    throw new Error('An error occurred while fetching student assignments');
+  }
+};
+
+export const fetchAssignmentDetails = async (user) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/student/fetchAssignmentDetails', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-id': localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).userId : user,
+      }
+    });
+    const responseText = await response.text();
+    if (response.ok) {
+      const data = JSON.parse(responseText);
+      if (data.status === 'success') {
+        return data;
+      } else {
+        throw new Error('Failed to fetch assignment details');
+      }
+    }
+  }
+  catch (error) {
+    throw new Error('An error occurred while fetching assignment details');
+  }
+};

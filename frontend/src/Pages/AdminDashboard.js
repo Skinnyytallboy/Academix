@@ -6,7 +6,7 @@ import Header from '../Components/forAdmin/Header';
 import ManageUsers from '../Components/forAdmin/ManageUsers';
 import Analytics from '../Components/forAdmin/Analytics';
 import CourseManagement from '../Components/forAdmin/CourseManagement';
-import RoleManagement from '../Components/forAdmin/RoleManagement';
+import AssignStudents from '../Components/forAdmin/AssignStudents';
 
 const AdminDashboard = ({ user }) => {
   const [activeTab, setActiveTab] = useState('Manage Users');
@@ -19,8 +19,8 @@ const AdminDashboard = ({ user }) => {
         return <Analytics />;
       case 'Course Management':
         return <CourseManagement />;
-      case 'Role Management': 
-        return <RoleManagement />;
+      case 'Assign Students': 
+        return <AssignStudents />;
       default:
         return <ManageUsers />;
     }

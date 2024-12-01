@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { fetchUsers, addUser , deleteUser  } from '../../Services/api';
+import { ClipLoader } from 'react-spinners';
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newUser , setNewUser ] = useState({
     username: '',
@@ -26,10 +28,11 @@ const ManageUsers = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
-  const usersPerPage = 10;
+  const usersPerPage = 5;
 
   useEffect(() => {
     const fetchUsersData = async () => {
+      setIsLoading(true);
       const response = await fetchUsers();
       if (response.status === "success") {
         setUsers(response.users);
@@ -37,6 +40,7 @@ const ManageUsers = () => {
       } else {
         alert('Failed to fetch users');
       }
+      setIsLoading(false);
     };
     fetchUsersData();
   }, []);
@@ -106,25 +110,30 @@ const ManageUsers = () => {
   const displayedUsers = users.slice(0, currentPage * usersPerPage);
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen space-y-8">
-      <h3 className="text-3xl font-bold text-gray-800">Manage Users</h3>
-      <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
-        <h4 className="text-xl font-semibold text-gray-800 mb-4">Users</h4>
+    <div className="p-2 bg-white min-h-screen space-y-4">
+      <h3 className="text-3xl font-bold text-indigo-800">Manage Users</h3>
+      {isLoading && (
+        <div className="flex justify-center items-center my-6">
+          <ClipLoader color="#3b82f6" loading={isLoading} size={50} />
+        </div>
+      )}
+      {!isLoading && (<div className="bg-white drop-shadow-2xl rounded-lg shadow-lg p-6 mt-6">
+        <h4 className="text-xl font-semibold text-indigo-800 mb-4">Users</h4>
         {displayedUsers.length > 0 ? (
           <ul className="divide-y divide-gray-200">
             {displayedUsers.map((user, index) => (
               <li
                 key={index}
-                className="flex justify-between items-center py-4 hover:bg-gray-100 rounded-lg transition"
+                className="flex justify-between items-center py-4 hover:bg-indigo-50 rounded-lg transition"
               >
                 <div>
-                  <p className="font-semibold text-gray-700">{user.username}</p>
-                  <p className="text-sm text-gray-500 ">{user.email}</p>
-                  <p className="text-sm text-gray-500">Role: {user.role}</p>
+                  <p className="font-semibold ml-4 text-indigo-700">{user.username}</p>
+                  <p className="text-sm ml-4 text-gray-500 ">{user.email}</p>
+                  <p className="text-sm ml-4 text-gray-500">Role: {user.role}</p>
                 </div>
                 <button
                   onClick={() => handleDeleteUser (index)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
+                  className="bg-red-500 text-white px-4 py-2 mr-4 rounded-lg hover:bg-red-600 transition duration-300"
                 >
                   Delete
                 </button>
@@ -135,11 +144,12 @@ const ManageUsers = () => {
           <p className="text-gray-500 text-center">No users found.</p>
         )}
       </div>
+      )}
       {displayedUsers.length < totalUsers && (
         <div className="flex justify-center mt-4">
           <button
             onClick={handleLoadMore}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300"
+            className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300"
           >
             Load More
           </button>
@@ -148,7 +158,7 @@ const ManageUsers = () => {
       <div className="flex justify-end">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300"
+          className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300"
         >
           Add User
         </button>
@@ -160,7 +170,7 @@ const ManageUsers = () => {
             <div className="space-y-4">
               <input
                 type="text"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 placeholder="Username"
                 value={newUser.username}
                 onChange={(e) =>
@@ -169,7 +179,7 @@ const ManageUsers = () => {
               />
               <input
                 type="email"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 placeholder="Email"
                 value={newUser.email}
                 onChange={(e) =>
@@ -178,7 +188,7 @@ const ManageUsers = () => {
               />
               <input
                 type="password"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 placeholder="Password"
                 value={newUser.password}
                 onChange={(e) =>
@@ -186,7 +196,7 @@ const ManageUsers = () => {
                 }
               />
               <select
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 value={newUser.role}
                 onChange={(e) =>
                   setNewUser ({ ...newUser , role: e.target.value })
@@ -200,7 +210,7 @@ const ManageUsers = () => {
                 <>
                   <input
                     type="date"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                     value={newUser.studentAttributes.dob}
                     onChange={(e) =>
                       setNewUser ({
@@ -214,7 +224,7 @@ const ManageUsers = () => {
                   />
                   <input
                     type="text"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                     placeholder="Roll No"
                     value={newUser.studentAttributes.rollNo}
                     onChange={(e) =>
@@ -229,7 +239,7 @@ const ManageUsers = () => {
                   />
                   <input
                     type="number"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                     placeholder="Semester"
                     value={newUser.studentAttributes.semester}
                     onChange={(e) =>
@@ -242,9 +252,8 @@ const ManageUsers = () => {
                       })
                     }
                   />
-                  <input
- type="month"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <input type="date"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                     value={newUser.studentAttributes.academicYear}
                     onChange={(e) =>
                       setNewUser ({
@@ -257,7 +266,7 @@ const ManageUsers = () => {
                     }
                   />
                   <select
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                     value={newUser.studentAttributes.currentStatus}
                     onChange={(e) =>
                       setNewUser ({
@@ -269,15 +278,17 @@ const ManageUsers = () => {
                       })
                     }
                   >
-                    <option value="Active">Active</option>
+                    <option value="Graduated">Active</option>
                     <option value="Inactive">Inactive</option>
+                    <option value="Active">Active</option>
+                    <option value="Suspended">Inactive</option>
                   </select>
                 </>
               )}
               {newUser.role === 'teacher' && (
                 <input
                   type="text"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                   placeholder="Name"
                   value={newUser.teacherAttributes.name}
                   onChange={(e) =>
@@ -292,7 +303,7 @@ const ManageUsers = () => {
                 <>
                   <input
                     type="text"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                     placeholder="Admin Name"
                     value={newUser.adminAttributes.name}
                     onChange={(e) =>
@@ -303,7 +314,7 @@ const ManageUsers = () => {
                     }
                   />
                   <select
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
                     value={newUser.adminAttributes.role}
                     onChange={(e) =>
                       setNewUser ({
@@ -326,7 +337,7 @@ const ManageUsers = () => {
                 </button>
                 <button
                   onClick={handleAddUser }
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300"
+                  className="bg-indigo-700 text-white px-6 py-3 rounded-lg hover:bg-indigo-800 transition duration-300"
                 >
                   Add User
                 </button>

@@ -73,7 +73,7 @@ function App() {
                 </PrivateRoute>
               }
             />
-            <Route path="/course/:courseId" element={<CoursePage />} />
+            <Route path="/course/:courseId" element={<CoursePage user={user} />} />
             <Route
               path="/professor-dashboard"
               element={

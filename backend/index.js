@@ -6,6 +6,9 @@ const authRoutes = require('./routes/authRoutes');
 const countRoutes = require('./routes/countRoutes');
 const teacherRoutes = require('./routes/teacherRoutes');
 const userManagmentRoutes = require('./routes/userManagementRoutes');
+const courseRoutes = require('./routes/courseRoutes');
+const studentRoutes = require('./routes/studentRoutes');
+const coursePage = require('./routes/coursePage');
 
 const app = express();
 app.use(cors());
@@ -15,6 +18,10 @@ app.use('/api', authRoutes);
 app.use('/api/count', countRoutes);
 app.use('/api/teacher', teacherRoutes); 
 app.use('/api/admin', userManagmentRoutes);
+app.use('/api/Acourse', courseRoutes);
+app.use('/api/student', studentRoutes);
+app.use('/api/CoursePage', coursePage);
+
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });

@@ -3,11 +3,9 @@ const router = express.Router();
 const connection = require('../config/db');
 
 router.get('/courses', (req, res) => {
-  console.log('Headers received:', req.headers);
 
   const teacherId = req.headers['teacherid'];
   if (!teacherId) {
-      console.log('No teacherId found in headers.');
       return res.status(400).json({ status: 'error', message: 'Missing teacherId in the request.' });
   }
 
@@ -24,12 +22,10 @@ router.get('/courses', (req, res) => {
 
   connection.query(coursesQuery, [teacherId], (err, courses) => {
       if (err) {
-          console.error('Database error (courses):', err);
           return res.status(500).json({ status: 'error', message: 'Internal server error.' });
       }
 
       if (courses.length === 0) {
-          console.log('No courses found for teacherId:', teacherId);
           return res.status(404).json({ status: 'error', message: 'No courses found for this teacher.' });
       }
 
@@ -45,7 +41,6 @@ router.get('/courses', (req, res) => {
 
       connection.query(enrollmentQuery, [courseIds], (err, enrollments) => {
           if (err) {
-              console.error('Database error (enrollments):', err);
               return res.status(500).json({ status: 'error', message: 'Internal server error.' });
           }
 
@@ -58,7 +53,6 @@ router.get('/courses', (req, res) => {
 
           connection.query(chatQuery, [courseIds], (err, chats) => {
               if (err) {
-                  console.error('Database error (chats):', err);
                   return res.status(500).json({ status: 'error', message: 'Internal server error.' });
               }
 
@@ -72,7 +66,6 @@ router.get('/courses', (req, res) => {
 
               connection.query(teacherQuery, [courseIds], (err, teachers) => {
                   if (err) {
-                      console.error('Database error (teachers):', err);
                       return res.status(500).json({ status: 'error', message: 'Internal server error.' });
                   }
 
@@ -86,7 +79,6 @@ router.get('/courses', (req, res) => {
                       };
                   });
 
-                  console.log('Query successful, response:', response);
                   res.status(200).json({ status: 'success', courses: response });
               });
           });

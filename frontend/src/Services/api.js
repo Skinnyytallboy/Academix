@@ -218,9 +218,22 @@ export const deleteCourseFromDatabase = async (courseId) => {
 };
 
 //functions for AssignStudents Admin dashboard
-// you can use fetchCourses (func made above) to get the courses 
-// if doesnt work ya koi issue tou sirf ik 
-// new function yahan dalna backend par bana hua in assignStudentsRoute
+export const fetchCoursesAdmin = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/api/assignStudents/courses', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (response.ok) {
+      return await response.json(); // Return the list of courses
+    } else {
+      throw new Error('Failed to fetch courses');
+    }
+  } catch (error) {
+    throw new Error(`An error occurred while fetching courses: ${error.message}`);
+  }
+};
 
 //get all students
 export const fetchAllStudents = async () => {
@@ -284,5 +297,118 @@ export const removeStudentFromCourse = async (courseId, studentId) => {
     }
   } catch (error) {
     throw new Error(`An error occurred while removing the student: ${error.message}`);
+  }
+};
+
+//functions for gradeSubmission in Professor dashboard
+// Fetch all Courses
+export const fetchCoursesProf = async () => {
+  try {
+    console.log('Fetching courses...');
+    const response = await fetch('http://localhost:5000/api/gradeSubmission/courses', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (response.ok) {
+      const datacourses = await response.json();
+      return datacourses;  // Return the courses array
+    } else if (response.status === 204) {
+      return [];  // Return an empty array if no courses are found
+    } else {
+      throw new Error('Failed to fetch courses');
+    }
+  } catch (error) {
+    throw new Error(`An error occurred while fetching courses: ${error.message}`);
+  }
+};
+
+
+
+// Function to fetch assignments for a given course ID
+export const fetchAssignments = async (courseId) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/gradeSubmission/assignments', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'courseId': courseId, // Pass the course ID in the headers
+      },
+    });
+
+    if (response.ok) {
+      return await response.json(); // Return the list of assignments
+    } else {
+      throw new Error('Failed to fetch assignments');
+    }
+  } catch (error) {
+    throw new Error(`An error occurred while fetching assignments: ${error.message}`);
+  }
+};
+
+// Function to fetch submissions for a given assignment ID
+export const fetchSubmissions = async (assignmentId) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/gradeSubmission/submissions', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'assignmentId': assignmentId, // Pass the assignment ID in the headers
+      },
+    });
+
+    if (response.ok) {
+      return await response.json(); // Return the list of submissions
+    } else {
+      throw new Error('Failed to fetch submissions');
+    }
+  } catch (error) {
+    throw new Error(`An error occurred while fetching submissions: ${error.message}`);
+  }
+};
+
+// Function to update or add a grade for a submission
+export const submitGrade = async (submissionId, teacherId, grade, feedback) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/gradeSubmission/grade', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ submissionId, teacherId, grade, feedback }),
+    });
+
+    if (response.ok) {
+      return await response.json(); // Return a success message
+    } else {
+      throw new Error('Failed to submit grade');
+    }
+  } catch (error) {
+    throw new Error(`An error occurred while submitting the grade: ${error.message}`);
+  }
+};
+
+
+//function for studentGrades in Professor dashboard
+//use fetchCoursesProf for getting courses
+export const fetchFinalGrades = async (courseId) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/studentGrades/Finalgrades', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'courseid': courseId, // Send the courseId in headers
+      },
+    });
+
+    if (response.ok) {
+      const grades = await response.json();
+      return grades; // Return the final grades
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to fetch final grades');
+    }
+  } catch (error) {
+    throw new Error(`An error occurred while fetching final grades: ${error.message}`);
   }
 };

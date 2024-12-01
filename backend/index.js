@@ -8,6 +8,8 @@ const teacherRoutes = require('./routes/teacherRoutes');
 const userManagmentRoutes = require('./routes/userManagementRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const assignStudentsRoute = require('./routes/assignStudentsRoute');
+const gradeSubmissionRoute = require('./routes/gradeSubmissionRoute');
+const studentGradesRoute = require('./routes/studentGradesRoute');
 
 const app = express();
 app.use(cors());
@@ -19,6 +21,8 @@ app.use('/api/teacher', teacherRoutes);
 app.use('/api/admin', userManagmentRoutes);
 app.use('/api/Acourse', courseRoutes);
 app.use('/api/assignStudents', assignStudentsRoute);
+app.use('/api/gradeSubmission', gradeSubmissionRoute);
+app.use('/api/studentGrades', studentGradesRoute);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });

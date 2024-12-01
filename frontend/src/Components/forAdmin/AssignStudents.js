@@ -83,32 +83,27 @@ const AssignStudents = () => {
   );
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen space-y-8">
-      <h3 className="text-3xl font-bold text-gray-800 text-center">
+    <div className="p-2 bg-white min-h-screen space-y-8">
+      <h3 className="text-3xl font-bold text-indigo-800 text-center">
         Assign Students to Courses
       </h3>
-
-      {/* Assign Students Section */}
-      <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
-        <h4 className="text-lg font-semibold text-gray-800 mb-4">
+      <div className="bg-white rounded-lg shadow-lg p-4 space-y-2">
+        <h4 className="text-lg font-semibold text-indigo-800 mb-4">
           Assign Students
         </h4>
         <div className="space-y-4">
-          {/* Search Students */}
           <div className="space-y-2">
-            <p className="text-gray-700 font-medium">Search Students:</p>
+            <p className="text-indigo-800 font-medium">Search Students:</p>
             <input
               type="text"
               placeholder="Search by name"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
-          {/* Select Students */}
           <div className="space-y-2">
-            <p className="text-gray-700 font-medium">Select Students:</p>
+            <p className="text-indigo-800 font-medium">Select Students:</p>
             <div className="grid grid-cols-2 gap-4 max-h-40 overflow-y-auto">
               {filteredStudents.map((student) => (
                 <div key={student.id} className="flex items-center space-x-2">
@@ -117,7 +112,7 @@ const AssignStudents = () => {
                     id={`student-${student.id}`}
                     checked={selectedStudents.includes(student.id)}
                     onChange={() => handleStudentSelection(student.id)}
-                    className="w-4 h-4 text-blue-500 focus:ring-blue-400 border-gray-300 rounded"
+                    className="w-4 h-4 text-blue-500 focus:ring-blue-400 border-indigo-300 rounded"
                   />
                   <label
                     htmlFor={`student-${student.id}`}
@@ -129,8 +124,6 @@ const AssignStudents = () => {
               ))}
             </div>
           </div>
-
-          {/* Select Course */}
           <select
             value={selectedCourse}
             onChange={(e) => setSelectedCourse(e.target.value)}
@@ -143,11 +136,9 @@ const AssignStudents = () => {
               </option>
             ))}
           </select>
-
-          {/* Assign Button */}
           <button
             onClick={handleAssign}
-            className="w-full bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+            className="w-full bg-indigo-500 text-white px-3 py-2 rounded-lg hover:bg-indigo-600 transition duration-300"
           >
             Assign Students to Course
           </button>
@@ -156,7 +147,7 @@ const AssignStudents = () => {
 
       {/* Assigned Students List */}
       <div className="bg-white rounded-lg shadow-lg p-6">
-        <h4 className="text-lg font-semibold text-gray-800 mb-4">
+        <h4 className="text-lg font-semibold text-indigo-800 mb-4">
           Assigned Students
         </h4>
         {assignments.length > 0 ? (

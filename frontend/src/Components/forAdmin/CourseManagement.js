@@ -103,30 +103,26 @@ const CourseManagement = () => {
       return prev;
     });
   };
-
-  // Filter courses based on search query
   const filteredCourses = courses.filter(course =>
     course.course_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     course.teacher_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="p-2 space-y-8 bg-white min-h-screen">
-      <h3 className="text-2xl font-bold text-gray-800">Course Management</h3>
-
-      {/* Add New Course */}
+    <div className="p-2 space-y-4 bg-white min-h-screen">
+      <h3 className="text-2xl font-bold text-indigo-800">Course Management</h3>
       <div className="bg-white rounded-lg shadow-lg p-4">
-        <h4 className="text-lg font-semibold text-gray-800 mb-4">Add New Course</h4>
+        <h4 className="text-lg font-semibold text-indigo-800 mb-4">Add New Course</h4>
         <div className="space-y-4">
           <input
             type="text"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Course Name"
             value={newCourse.name}
             onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
           />
           <textarea
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Course Description"
             value={newCourse.description}
             onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
@@ -144,34 +140,30 @@ const CourseManagement = () => {
             ))}
           </select>
           <button
-            className="w-full p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            className="w-full p-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600"
             onClick={handleAddCourse}
           >
             Add Course
           </button>
         </div>
       </div>
-
-      {/* Search and Toggle Show All */}
       <div className="flex items-center space-x-4">
         <input
           type="text"
-          className="w-1/3 p-2 border border-gray-300 rounded-lg"
+          className="w-1/3 p-2 border border-indigo-300 rounded-lg"
           placeholder="Search Courses"
           value={searchQuery}
           onChange={handleSearchChange}
         />
         <button
-          className="p-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+          className="p-2 bg-indigo-500 rounded-lg hover:bg-indigo-600 text-white"
           onClick={() => setShowAllCourses((prev) => !prev)}
         >
           {showAllCourses ? 'Show 5 Courses' : 'Show All Courses'}
         </button>
       </div>
-
-      {/* Course List */}
-      <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
-        <h4 className="text-xl font-semibold text-gray-800">Courses List</h4>
+      <div className="bg-white rounded-lg shadow-lg p-2 mt-2">
+        <h4 className="text-xl font-semibold text-indigo-700">Courses List</h4>
 
         {isLoading ? (
           <div className="flex justify-center">
@@ -180,22 +172,22 @@ const CourseManagement = () => {
         ) : (
           <>
             {filteredCourses.length > 0 ? (
-              <table className="table-auto w-full mt-4">
+              <table className="table-auto w-full mt-2">
                 <thead>
-                  <tr className="bg-gray-100">
-                    <th className="py-2 px-4 text-left text-sm font-semibold">Course Name</th>
-                    <th className="py-2 px-4 text-left text-sm font-semibold">Professor</th>
-                    <th className="py-2 px-4 text-left text-sm font-semibold">Actions</th>
+                  <tr className="bg-indigo-600">
+                    <th className="py-2 px-4 text-left text-white text-sm font-semibold">Course Name</th>
+                    <th className="py-2 px-4 text-left text-white text-sm font-semibold">Professor</th>
+                    <th className="py-2 px-4 text-left text-white text-sm font-semibold">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {(showAllCourses ? filteredCourses : filteredCourses.slice((currentPage - 1) * coursesPerPage, currentPage * coursesPerPage)).map((course) => (
                     <tr key={course.course_id} className="border-b">
-                      <td className="py-2 px-4 text-sm">{course.course_name}</td>
-                      <td className="py-2 px-4 text-sm">{course.teacher_name}</td>
-                      <td className="py-2 px-4 text-sm">
+                      <td className="py-2 px-4 font-medium text-sm">{course.course_name}</td>
+                      <td className="py-2 px-4 font-medium text-sm">{course.teacher_name}</td>
+                      <td className="py-2 px-4 font-medium text-sm">
                         <button
-                          className="text-red-500 hover:text-red-700 p-2 rounded-md"
+                          className="text-red-500 hover:text-red-700 p-2 rounded"
                           onClick={() => handleDeleteCourse(course.course_id)}
                         >
                           <i className="fas fa-trash-alt"></i> Delete
@@ -208,12 +200,10 @@ const CourseManagement = () => {
             ) : (
               <p>No courses available</p>
             )}
-
-            {/* Pagination */}
             {!showAllCourses && (
               <div className="flex justify-between mt-4">
                 <button
-                  className="bg-gray-200 text-gray-800 py-2 px-4 rounded"
+                  className="bg-indigo-800 text-white py-2 px-4 rounded"
                   onClick={() => handlePagination('prev')}
                   disabled={currentPage === 1}
                 >
@@ -221,7 +211,7 @@ const CourseManagement = () => {
                 </button>
                 <span className="self-center text-lg">{`Page ${currentPage}`}</span>
                 <button
-                  className="bg-gray-200 text-gray-800 py-2 px-4 rounded"
+                  className="bg-indigo-800 text-white py-2 px-4 rounded"
                   onClick={() => handlePagination('next')}
                   disabled={currentPage * coursesPerPage >= totalCourses}
                 >

@@ -290,7 +290,7 @@ export const submitStudentAssignment = async (assignmentData) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ courseId, studentIds }),  //make sure to send the objects in this order
+      body: JSON.stringify(assignmentData),
     });
 
     if (response.ok) {
@@ -377,9 +377,9 @@ export const fetchAllStudents = async () => {
 export const assignStudentsToCourse = async (courseId, studentIds) => {
   try {
     const response = await fetch('http://localhost:5000/api/assignStudents/assign-students', {
-      body: JSON.stringify(assignmentData),
+      body: JSON.stringify({ courseId, studentIds }),
     });
-    console.log('Request body assignmnet:', assignmentData);
+    console.log('Request body assignmnet:', { courseId, studentIds });
 
     if (response.ok) {
       const result = await response.json();

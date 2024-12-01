@@ -52,21 +52,21 @@ router.get('/pendingAssignments', async (req, res) => {
     }
 
     const query = `
-      SELECT 
-          a.assignment_id, 
-          a.course_id, 
-          a.title, 
-          a.description, 
-          a.due_date
-      FROM Assignment a
-      JOIN Courses c ON c.course_id = a.course_id
-      JOIN Enrollment e ON e.course_id = c.course_id
-      JOIN Student s ON s.student_id = e.student_id
-      JOIN User u ON u.user_id = s.student_id
-      JOIN Submission ss ON a.assignment_id = ss.assignment_id
-      WHERE u.user_id = 1 
-          AND e.status = 'Incomplete'
-          AND ss.status = 'Not Submitted';
+    SELECT 
+    a.assignment_id, 
+    a.course_id, 
+    a.title, 
+    a.description, 
+    a.due_date
+FROM Assignment a
+JOIN Courses c ON c.course_id = a.course_id
+JOIN Enrollment e ON e.course_id = c.course_id
+JOIN Student s ON s.student_id = e.student_id
+JOIN User u ON u.user_id = s.student_id
+LEFT JOIN Submission ss ON a.assignment_id = ss.assignment_id AND ss.student_id = s.student_id
+WHERE u.user_id = ? 
+    AND e.status IN ('Enrolled', 'Incomplete') 
+    AND (ss.status IS NULL OR ss.status = 'Not Submitted') 
     `;
     db.query(query, [userID], (err, results) => {
       if (err) {
@@ -78,10 +78,12 @@ router.get('/pendingAssignments', async (req, res) => {
         return res.status(404).json({ message: 'No available assignments found for the user.' });
       }
 
+      console.log('pending assignments', results);
       res.status(200).json({ status: 'success' , availableAssignments: results });
     });
   } catch (error) {
     console.error('Server error:', error);
+
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });

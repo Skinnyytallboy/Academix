@@ -374,12 +374,16 @@ export const fetchAllStudents = async () => {
   }
 };
 
-export const assignStudentsToCourse = async (courseId, studentIds) => {
+export const assignStudentsToCourse = async ({ courseId, studentIds }) => {
   try {
     const response = await fetch('http://localhost:5000/api/assignStudents/assign-students', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', 
+      },
       body: JSON.stringify({ courseId, studentIds }),
     });
-    console.log('Request body assignmnet:', { courseId, studentIds });
+    console.log('Request body assignment:', { courseId, studentIds });
 
     if (response.ok) {
       const result = await response.json();
@@ -393,7 +397,6 @@ export const assignStudentsToCourse = async (courseId, studentIds) => {
     throw new Error('An error occurred while submitting the assignment');
   }
 };
-
 
 export const removeStudentFromCourse = async (courseId, studentId) => {
   try {

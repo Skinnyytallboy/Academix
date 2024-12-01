@@ -39,31 +39,31 @@ router.get('/courses', (req, res) => {
 
 // 3. Assign students to a course
 router.post('/assign-students', (req, res) => {
-    const { courseId, studentIds } = req.body;
+  const { courseId, studentIds } = req.body;  // Ensure you're receiving an array of student IDs
   
-    // Validate inputs
-    if (!courseId || !Array.isArray(studentIds) || studentIds.length === 0) {
-      return res.status(400).json({ status: 'error', message: 'Course ID and student IDs are required.' });
+  if (!courseId || !studentIds || studentIds.length === 0) {
+    return res.status(400).json({ status: 'error', message: 'Course ID and student IDs are required.' });
+  }
+
+  // Prepare the values to be inserted into the Enrollment table
+  const values = studentIds.map((studentId) => [courseId, studentId, 'Enrolled']);
+  
+  const query = `
+    INSERT INTO Enrollment (course_id, student_id, status) 
+    VALUES ?
+  `;
+  
+  connection.query(query, [values], (err, result) => {
+    if (err) {
+      return res.status(500).json({ status: 'error', message: 'Internal server error.', error: err.message });
     }
-  
-    // Query to insert into Enrollment table
-    const values = studentIds.map((studentId) => [courseId, studentId, 'Enrolled']);
-    const query = `
-      INSERT INTO Enrollment (course_id, student_id, status) 
-      VALUES ?
-    `;
-  
-    connection.query(query, [values], (err, result) => {
-      if (err) {
-        return res.status(500).json({ status: 'error', message: 'Internal server error.', error: err.message });
-      }
-  
-      return res.status(201).json({
-        status: 'success',
-        message: `Successfully assigned ${studentIds.length} student(s) to course ID ${courseId}.`,
-      });
+
+    return res.status(201).json({
+      status: 'success',
+      message: `Successfully assigned ${studentIds.length} student(s) to course ID ${courseId}.`,
     });
   });
+});
   
 
 // 4. Remove a student from a course

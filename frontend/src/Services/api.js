@@ -216,3 +216,123 @@ export const deleteCourseFromDatabase = async (courseId) => {
     throw new Error('An error occurred while deleting the course');
   }
 };
+
+export const fetchStudentCourses = async (user) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/student/courses', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-id': localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).userId : user,
+      },
+    });
+    const responseText = await response.text();
+    if (response.ok) {
+      const data = JSON.parse(responseText);
+      if (data.status === 'success') {
+        return data;
+      } else {
+        throw new Error('Failed to fetch available courses');
+      }
+    } else {
+      throw new Error('Failed to fetch student courses');
+    }
+  } catch (error) {
+    throw new Error('An error occurred while fetching student courses');
+  }
+};
+
+export const fetchNotSubmittedAssignments = async (user) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/student/pendingAssignments', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-id': localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).userId : user,
+      },
+    });
+    const responseText = await response.text();
+    if (response.ok) {
+      const data = JSON.parse(responseText);
+      if (data.status === 'success') {
+        return data;
+      } else {
+        throw new Error('Failed to fetch pending assignments');
+      }
+    }
+  } catch (error) {
+    throw new Error('An error occurred while fetching assignments');
+  }
+};
+
+export const submitStudentAssignment = async (assignmentData) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/student/submitAssignment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(assignmentData),
+    });
+    console.log('Request body assignmnet:', assignmentData);
+
+    if (response.ok) {
+      const result = await response.json();
+      return result;
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to submit assignment');
+    }
+  } catch (error) {
+    console.error('Submission error:', error);
+    throw new Error('An error occurred while submitting the assignment');
+  }
+};
+
+export const fetchAllStudentAssignments = async (user) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/student/fetchAllStudentAssignments', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-id': localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).userId : user,
+      },
+    });
+    const responseText = await response.text();
+    if (response.ok) {
+      const data = JSON.parse(responseText);
+      if (data.status === 'success') {
+        return data;
+      } else {
+        throw new Error('Failed to fetch student assignments');
+      }
+    }
+  }
+  catch (error) {
+    throw new Error('An error occurred while fetching student assignments');
+  }
+};
+
+export const fetchAssignmentDetails = async (user) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/student/fetchAssignmentDetails', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-id': localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).userId : user,
+      }
+    });
+    const responseText = await response.text();
+    if (response.ok) {
+      const data = JSON.parse(responseText);
+      if (data.status === 'success') {
+        return data;
+      } else {
+        throw new Error('Failed to fetch assignment details');
+      }
+    }
+  }
+  catch (error) {
+    throw new Error('An error occurred while fetching assignment details');
+  }
+};

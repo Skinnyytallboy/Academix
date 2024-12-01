@@ -76,7 +76,9 @@ const ManageUsers = () => {
       if (result) {
         // Refresh the user list after adding a new user
         const fetchedUsers = await fetchUsers();
-        setUsers(fetchedUsers);
+        if (fetchedUsers.status === "success") {
+          setUsers(fetchedUsers.users); // Ensure users is set as an array
+        }
         setIsModalOpen(false);
         setNewUser ({
           username: '',

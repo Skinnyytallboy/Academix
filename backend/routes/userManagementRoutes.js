@@ -32,12 +32,10 @@ router.get('/users', (req, res) => {
 });
 
 //add user //also need to handle adding the user in their specific table
-router.post('/users', (req, res) => {
 
-  console.log('Incoming request data:', req.body);
+router.post('/users', (req, res) => {
   const { username, email, password, role, studentAttributes, teacherAttributes, adminAttributes } = req.body;
 
-  
   // Check for required fields
   if (!username || !email || !password || !role) {
     return res.status(400).json({ status: 'error', message: 'All fields are required.' });
@@ -48,80 +46,201 @@ router.post('/users', (req, res) => {
     return res.status(400).json({ status: 'error', message: 'Invalid role.' });
   }
 
-  // Insert user into the `User` table
-  const userQuery = 'INSERT INTO User (username, email, password, role) VALUES (?, ?, ?, ?)';
-  connection.query(userQuery, [username, email, password, role], (err, results) => {
+  // Start a transaction
+  connection.beginTransaction((err) => {
     if (err) {
-      return res.status(500).json({ status: 'error', message: 'Internal server error.' });
+      return res.status(500).json({ status: 'error', message: 'Error starting transaction.' });
     }
 
-    const userId = results.insertId;
-
-    let insertRoleQuery = '';
-    const queryParams = [];
-
-    if (role === 'student') {
-      // Validate and prepare student details
-      if (
-        !studentAttributes.name || 
-        !studentAttributes.dob || 
-        !studentAttributes.rollNo || 
-        !studentAttributes.semester || 
-        !studentAttributes.academicYear || 
-        !studentAttributes.currentStatus
-      ) {
-        return res.status(400).json({ status: 'error', message: 'Missing or incomplete student details.' });
+    // Insert user into the `User` table
+    const userQuery = 'INSERT INTO User (username, email, password, role) VALUES (?, ?, ?, ?)';
+    connection.query(userQuery, [username, email, password, role], (err, results) => {
+      if (err) {
+        return connection.rollback(() => {
+          res.status(500).json({ status: 'error', message: 'Error inserting user.' });
+        });
       }
 
-      insertRoleQuery = `
-        INSERT INTO Student (student_id, name, dob, roll_no, semester, academic_year, current_status)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-      `;
-      queryParams.push(
-        userId,
-        studentAttributes.name, 
-        studentAttributes.dob,
-        studentAttributes.rollNo,
-        studentAttributes.semester,
-        studentAttributes.academicYear,
-        studentAttributes.currentStatus
-      );
-    }
+      const userId = results.insertId;
+      let insertRoleQuery = '';
+      const queryParams = [];
 
-    if (role === 'teacher') {
-      // Validate and prepare teacher details
-      if (!teacherAttributes.name) {
-        return res.status(400).json({ status: 'error', message: 'Missing teacher details.' });
-      }
-
-      insertRoleQuery = 'INSERT INTO Teacher (teacher_id, name) VALUES (?, ?)';
-      queryParams.push(userId, teacherAttributes.name);
-    }
-
-    if (role === 'admin') {
-      // Validate and prepare admin details
-      if (!adminAttributes.name || !adminAttributes.role) {
-        return res.status(400).json({ status: 'error', message: 'Missing admin details.' });
-      }
-
-      insertRoleQuery = 'INSERT INTO Admin (admin_id, name, role) VALUES (?, ?, ?)';
-      queryParams.push(userId, adminAttributes.name, adminAttributes.role);
-    }
-
-    // Insert into the role-specific table
-    if (insertRoleQuery) {
-      connection.query(insertRoleQuery, queryParams, (err) => {
-        if (err) {
-          return res.status(500).json({ status: 'error', message: 'Internal server error.' });
+      if (role === 'student') {
+        // Validate and prepare student details
+        if (
+          !studentAttributes.name ||
+          !studentAttributes.dob ||
+          !studentAttributes.rollNo ||
+          !studentAttributes.semester ||
+          !studentAttributes.academicYear ||
+          !studentAttributes.currentStatus
+        ) {
+          return connection.rollback(() => {
+            res.status(400).json({ status: 'error', message: 'Missing or incomplete student details.' });
+          });
         }
 
-        res.status(201).json({ status: 'success', message: `${role.charAt(0).toUpperCase() + role.slice(1)} added successfully.` });
-      });
-    } else {
-      res.status(400).json({ status: 'error', message: 'Invalid role-specific logic.' });
-    }
+        insertRoleQuery = `
+          INSERT INTO Student (student_id, name, dob, roll_no, semester, academic_year, current_status)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
+        queryParams.push(
+          userId,
+          studentAttributes.name,
+          studentAttributes.dob,
+          studentAttributes.rollNo,
+          studentAttributes.semester,
+          studentAttributes.academicYear,
+          studentAttributes.currentStatus
+        );
+      }
+
+      if (role === 'teacher') {
+        // Validate and prepare teacher details
+        if (!teacherAttributes.name) {
+          return connection.rollback(() => {
+            res.status(400).json({ status: 'error', message: 'Missing teacher details.' });
+          });
+        }
+
+        insertRoleQuery = 'INSERT INTO Teacher (teacher_id, name) VALUES (?, ?)';
+        queryParams.push(userId, teacherAttributes.name);
+      }
+
+      if (role === 'admin') {
+        // Validate and prepare admin details
+        if (!adminAttributes.name || !adminAttributes.role) {
+          return connection.rollback(() => {
+            res.status(400).json({ status: 'error', message: 'Missing admin details.' });
+          });
+        }
+
+        insertRoleQuery = 'INSERT INTO Admin (admin_id, name, role) VALUES (?, ?, ?)';
+        queryParams.push(userId, adminAttributes.name, adminAttributes.role);
+      }
+
+      // Insert into the role-specific table
+      if (insertRoleQuery) {
+        connection.query(insertRoleQuery, queryParams, (err) => {
+          if (err) {
+            return connection.rollback(() => {
+              res.status(500).json({ status: 'error', message: 'Error inserting role-specific data.' });
+            });
+          }
+
+          // If all queries succeed, commit the transaction
+          connection.commit((err) => {
+            if (err) {
+              return connection.rollback(() => {
+                res.status(500).json({ status: 'error', message: 'Error committing transaction.' });
+              });
+            }
+
+            res.status(201).json({
+              status: 'success',
+              message: `${role.charAt(0).toUpperCase() + role.slice(1)} added successfully.`,
+            });
+          });
+        });
+      } else {
+        return connection.rollback(() => {
+          res.status(400).json({ status: 'error', message: 'Invalid role-specific logic.' });
+        });
+      }
+    });
   });
 });
+
+// router.post('/users', (req, res) => {
+
+//   console.log('Incoming request data:', req.body);
+//   const { username, email, password, role, studentAttributes, teacherAttributes, adminAttributes } = req.body;
+
+  
+//   // Check for required fields
+//   if (!username || !email || !password || !role) {
+//     return res.status(400).json({ status: 'error', message: 'All fields are required.' });
+//   }
+
+//   // Validate role
+//   if (!['student', 'teacher', 'admin'].includes(role)) {
+//     return res.status(400).json({ status: 'error', message: 'Invalid role.' });
+//   }
+
+//   // Insert user into the `User` table
+//   const userQuery = 'INSERT INTO User (username, email, password, role) VALUES (?, ?, ?, ?)';
+//   connection.query(userQuery, [username, email, password, role], (err, results) => {
+//     if (err) {
+//       return res.status(500).json({ status: 'error', message: 'Internal server error.' });
+//     }
+
+//     const userId = results.insertId;
+
+//     let insertRoleQuery = '';
+//     const queryParams = [];
+
+//     if (role === 'student') {
+//       // Validate and prepare student details
+//       if (
+//         !studentAttributes.name || 
+//         !studentAttributes.dob || 
+//         !studentAttributes.rollNo || 
+//         !studentAttributes.semester || 
+//         !studentAttributes.academicYear || 
+//         !studentAttributes.currentStatus
+//       ) {
+//         return res.status(400).json({ status: 'error', message: 'Missing or incomplete student details.' });
+//       }
+
+//       insertRoleQuery = `
+//         INSERT INTO Student (student_id, name, dob, roll_no, semester, academic_year, current_status)
+//         VALUES (?, ?, ?, ?, ?, ?, ?)
+//       `;
+//       queryParams.push(
+//         userId,
+//         studentAttributes.name, 
+//         studentAttributes.dob,
+//         studentAttributes.rollNo,
+//         studentAttributes.semester,
+//         studentAttributes.academicYear,
+//         studentAttributes.currentStatus
+//       );
+//     }
+
+//     if (role === 'teacher') {
+//       // Validate and prepare teacher details
+//       if (!teacherAttributes.name) {
+//         return res.status(400).json({ status: 'error', message: 'Missing teacher details.' });
+//       }
+
+//       insertRoleQuery = 'INSERT INTO Teacher (teacher_id, name) VALUES (?, ?)';
+//       queryParams.push(userId, teacherAttributes.name);
+//     }
+
+//     if (role === 'admin') {
+//       // Validate and prepare admin details
+//       if (!adminAttributes.name || !adminAttributes.role) {
+//         return res.status(400).json({ status: 'error', message: 'Missing admin details.' });
+//       }
+
+//       insertRoleQuery = 'INSERT INTO Admin (admin_id, name, role) VALUES (?, ?, ?)';
+//       queryParams.push(userId, adminAttributes.name, adminAttributes.role);
+//     }
+
+//     // Insert into the role-specific table
+//     if (insertRoleQuery) {
+//       connection.query(insertRoleQuery, queryParams, (err) => {
+//         if (err) {
+//           return res.status(500).json({ status: 'error', message: 'Internal server error.' });
+//         }
+
+//         res.status(201).json({ status: 'success', message: `${role.charAt(0).toUpperCase() + role.slice(1)} added successfully.` });
+//       });
+//     } else {
+//       res.status(400).json({ status: 'error', message: 'Invalid role-specific logic.' });
+//     }
+//   });
+// });
 
 
 //delete user

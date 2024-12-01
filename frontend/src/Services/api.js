@@ -216,3 +216,73 @@ export const deleteCourseFromDatabase = async (courseId) => {
     throw new Error('An error occurred while deleting the course');
   }
 };
+
+//functions for AssignStudents Admin dashboard
+// you can use fetchCourses (func made above) to get the courses 
+// if doesnt work ya koi issue tou sirf ik 
+// new function yahan dalna backend par bana hua in assignStudentsRoute
+
+//get all students
+export const fetchAllStudents = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/api/assignStudents/students', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const students = await response.json();
+      return students; // Return the list of students
+    } else {
+      throw new Error('Failed to fetch students');
+    }
+  } catch (error) {
+    throw new Error(`An error occurred while fetching students: ${error.message}`);
+  }
+};
+
+export const assignStudentsToCourse = async (courseId, studentIds) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/assignStudents/assign-students', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ courseId, studentIds }),  //make sure to send the objects in this order
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      return result; // Return the success message and assigned data
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to assign students to the course');
+    }
+  } catch (error) {
+    throw new Error(`An error occurred while assigning students: ${error.message}`);
+  }
+};
+
+export const removeStudentFromCourse = async (courseId, studentId) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/assignStudents/remove-student', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ courseId, studentId }),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      return result; // Return the success message
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to remove the student from the course');
+    }
+  } catch (error) {
+    throw new Error(`An error occurred while removing the student: ${error.message}`);
+  }
+};

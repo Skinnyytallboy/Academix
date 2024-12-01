@@ -133,3 +133,86 @@ export const deleteUser = async (userId) => {
   }
 };
 
+export const fetchCourses = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/api/Acourse/existingCourses', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const dataC = await response.json();
+      return dataC;
+    } else {
+      throw new Error(`Failed to fetch courses: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error(error);  // Optionally log error
+    throw new Error('An error occurred while fetching courses');
+  }
+};
+
+export const fetchProfessors = async () => {
+  try {
+    const response = await fetch('http://localhost:5000/api/Acourse/allProfessors', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const dataP = await response.json();
+      return dataP;
+    } else {
+      throw new Error(`Failed to fetch professors: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error(error);  // Optionally log error
+    throw new Error('An error occurred while fetching professors');
+  }
+};
+
+export const addCourseToDatabase = async (newCourse) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/Acourse/addCourse', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newCourse),
+    });
+    if (response.ok) {
+      const result = await response.json();
+      return result;
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to add course');
+    }
+  } catch (error) {
+    throw new Error('An error occurred while adding the course');
+  }
+};
+
+export const deleteCourseFromDatabase = async (courseId) => {
+  try {
+    const response = await fetch(`http://localhost:5000/api/Acourse/deleteCourse`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'courseid' : courseId,
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      return result;
+    } else {
+      throw new Error('Failed to delete course');
+    }
+  } catch (error) {
+    throw new Error('An error occurred while deleting the course');
+  }
+};

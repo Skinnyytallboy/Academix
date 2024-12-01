@@ -13,12 +13,10 @@ router.get('/users', (req, res) => {
 
   connection.query(query, (err, results) => {
     if (err) {
-      console.error('Database error (users):', err);
       return res.status(500).json({ status: 'error', message: 'Internal server error.' });
     }
 
     if (results.length === 0) {
-      console.log('No users found.');
       return res.status(404).json({ status: 'error', message: 'No users found.' });
     }
 
@@ -29,7 +27,6 @@ router.get('/users', (req, res) => {
       role: user.role
     }));
 
-    console.log('Query successful, response:', response);
     res.status(200).json({ status: 'success', users: response });
   });
 });
@@ -55,7 +52,6 @@ router.post('/users', (req, res) => {
   const userQuery = 'INSERT INTO User (username, email, password, role) VALUES (?, ?, ?, ?)';
   connection.query(userQuery, [username, email, password, role], (err, results) => {
     if (err) {
-      console.error('Database error (insert user):', err);
       return res.status(500).json({ status: 'error', message: 'Internal server error.' });
     }
 
@@ -116,7 +112,6 @@ router.post('/users', (req, res) => {
     if (insertRoleQuery) {
       connection.query(insertRoleQuery, queryParams, (err) => {
         if (err) {
-          console.error('Database error (insert role-specific data):', err);
           return res.status(500).json({ status: 'error', message: 'Internal server error.' });
         }
 

@@ -4,6 +4,7 @@ import { ClipLoader } from 'react-spinners';
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newUser , setNewUser ] = useState({
@@ -47,9 +48,9 @@ const ManageUsers = () => {
   }, []);
 
   const handleDeleteUser  = async (index) => {
-    const userId = users[index].user_id;  // Assuming each user has a user_id
+    const userId = users[index].user_id;
     try {
-      const result = await deleteUser (userId); // Use deleteUser  function
+      const result = await deleteUser (userId);
       if (result) {
         const updatedUsers = [...users];
         updatedUsers.splice(index, 1);
@@ -70,14 +71,12 @@ const ManageUsers = () => {
       alert('All fields are required!');
       return;
     }
-
     try {
-      const result = await addUser (newUser); // Use addUser  function
+      const result = await addUser (newUser);
       if (result) {
-        // Refresh the user list after adding a new user
         const fetchedUsers = await fetchUsers();
         if (fetchedUsers.status === "success") {
-          setUsers(fetchedUsers.users); // Ensure users is set as an array
+          setUsers(fetchedUsers.users);
         }
         setIsModalOpen(false);
         setNewUser ({
@@ -123,6 +122,15 @@ const ManageUsers = () => {
       )}
       {!isLoading && (<div className="bg-white drop-shadow-2xl rounded-lg shadow-lg p-6 mt-6">
         <h4 className="text-xl font-semibold text-indigo-800 mb-4">Users</h4>
+        <div className="mb-4">
+            <input
+              type="text"
+              placeholder="Search users by username, email or role"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            />
+          </div>
         {displayedUsers.length > 0 ? (
           <ul className="divide-y divide-gray-200">
             {displayedUsers.map((user, index) => (

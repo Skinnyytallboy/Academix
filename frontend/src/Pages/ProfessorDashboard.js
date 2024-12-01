@@ -17,7 +17,7 @@ const ProfessorDashboard = ({ user }) => {
           case 'Assignments':
             return <AssignAssignment />;
           case 'Calendar':
-            return <AssignmentCalendar />;
+            return <AssignmentCalendar user = {user} />;
           case 'Grade Submissions':
             return <GradeSubmissions />;
           case 'Student Grades':

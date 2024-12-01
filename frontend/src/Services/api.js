@@ -1,3 +1,4 @@
+
 export const loginUser = async (email, password) => {
   try {
     const response = await fetch('http://localhost:5000/api/login', {
@@ -529,5 +530,27 @@ export const fetchFinalGrades = async (courseId) => {
     }
   } catch (error) {
     throw new Error(`An error occurred while fetching final grades: ${error.message}`);
+  }
+};
+
+export const assignmentCalenderProf = async (user) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/prof/assignments', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'user-id': localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).userId : user,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      throw new Error('Failed to fetch assignments');
+    }
+  } catch (error) {
+    console.error('Error fetching assignments:', error);
+    return { status: 'error', message: error.message };
   }
 };

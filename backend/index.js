@@ -12,6 +12,7 @@ const gradeSubmissionRoute = require('./routes/gradeSubmissionRoute');
 const studentGradesRoute = require('./routes/studentGradesRoute');
 const studentRoutes = require('./routes/studentRoutes');
 const coursePage = require('./routes/coursePage');
+const prof = require('./routes/prof');
 
 const app = express();
 app.use(cors());
@@ -27,6 +28,7 @@ app.use('/api/gradeSubmission', gradeSubmissionRoute);
 app.use('/api/studentGrades', studentGradesRoute);
 app.use('/api/student', studentRoutes);
 app.use('/api/CoursePage', coursePage);
+app.use('/api/prof', prof);
 
 
 app.get('/api/health', (req, res) => {

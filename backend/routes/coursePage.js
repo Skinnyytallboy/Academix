@@ -208,4 +208,131 @@ router.get('/:courseId', async (req, res) => {
     }
 });
 
+router.post('/:courseId/chat', async (req, res) => {
+    const courseId = req.params.courseId;
+    const userID = req.headers.userid;
+    const userRole = req.headers.userrole;
+
+    if (!userID || !userRole) {
+        return res.status(400).json({ error: 'Invalid user information in headers.' });
+    }
+
+    try {
+        if (userRole === 'teacher' || userRole === 'student') {
+            const { message } = req.body;
+            const senderId = userID;  // assuming the user ID comes from headers
+
+            // Insert the new message into the chat
+            const query = `
+                INSERT INTO Chat (course_id, sender_id, message, sent_at)
+                VALUES (?, ?, ?, NOW())
+            `;
+            db.query(query, [courseId, senderId, message], (err, result) => {
+                if (err) {
+                    return res.status(500).json({ error: 'Internal server error.' });
+                }
+                res.status(201).json({ message: 'Message sent successfully.' });
+            });
+        } else {
+            return res.status(403).json({ error: 'Access forbidden for this user role.' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+// POST for Content (Teacher only)
+router.post('/:courseId/content', async (req, res) => {
+    const courseId = req.params.courseId;
+    const { content } = req.body; // Content to be posted
+    const userID = req.headers.userid;
+    const userRole = req.headers.userrole;
+
+    if (!userID || !userRole || !content) {
+        return res.status(400).json({ error: 'Invalid data or missing fields.' });
+    }
+
+    try {
+        if (userRole !== 'teacher') {
+            return res.status(403).json({ error: 'Only teachers can post content.' });
+        }
+
+        // Check if user is the teacher of the course
+        const query = `
+            SELECT teacher_id 
+            FROM Teacher_Courses 
+            WHERE course_id = ? AND teacher_id = ?`;
+        db.query(query, [courseId, userID], (err, result) => {
+            if (err) {
+                return res.status(500).json({ error: 'Internal server error.' });
+            }
+            if (result.length === 0) {
+                return res.status(403).json({ error: 'Access forbidden to this course.' });
+            }
+
+            const updateContentQuery = `
+                UPDATE Courses
+                SET content = JSON_ARRAY_APPEND(content, '$', ?)
+                WHERE course_id = ?`;
+
+            db.query(updateContentQuery, [content, courseId], (err, updateResult) => {
+                if (err) {
+                    return res.status(500).json({ error: 'Internal server error.' });
+                }
+                res.status(201).json({ message: 'Content posted successfully.' });
+            });
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+
+// POST for Announcements (Teacher only)
+router.post('/:courseId/announcement', async (req, res) => {
+    const courseId = req.params.courseId;
+    const { announcement } = req.body; // Announcement message
+    const userID = req.headers.userid;
+    const userRole = req.headers.userrole;
+
+    if (!userID || !userRole || !announcement) {
+        return res.status(400).json({ error: 'Invalid data or missing fields.' });
+    }
+
+    try {
+        if (userRole !== 'teacher') {
+            return res.status(403).json({ error: 'Only teachers can post announcements.' });
+        }
+
+        // Check if user is the teacher of the course
+        const query = `
+            SELECT teacher_id 
+            FROM Teacher_Courses 
+            WHERE course_id = ? AND teacher_id = ?`;
+        db.query(query, [courseId, userID], (err, result) => {
+            if (err) {
+                return res.status(500).json({ error: 'Internal server error.' });
+            }
+            if (result.length === 0) {
+                return res.status(403).json({ error: 'Access forbidden to this course.' });
+            }
+
+            const updateAnnouncementQuery = `
+                UPDATE Courses
+                SET announcements = JSON_ARRAY_APPEND(announcements, '$', ?)
+                WHERE course_id = ?`;
+
+            db.query(updateAnnouncementQuery, [announcement, courseId], (err, updateResult) => {
+                if (err) {
+                    return res.status(500).json({ error: 'Internal server error.' });
+                }
+                res.status(201).json({ message: 'Announcement posted successfully.' });
+            });
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+
 module.exports = router;

@@ -24,6 +24,8 @@ const CourseList = () => {
   }, []);
 
   const handleCourseClick = (courseId) => {
+    localStorage.removeItem('courseId');
+    localStorage.setItem('courseId', courseId);
     navigate(`/course/${courseId}`);
   };
 

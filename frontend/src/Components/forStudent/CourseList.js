@@ -27,8 +27,10 @@ const CourseList = ({ user }) => {
     fetchCourses();
   }, [user]);
 
-  const handleCourseClick = (course_id) => {
-    navigate(`/course/${course_id}`);
+  const handleCourseClick = (courseId) => {
+    localStorage.removeItem('courseId');
+    localStorage.setItem('courseId', courseId);
+    navigate(`/course/${courseId}`);
   };
 
   const categorizeCourses = (status) => courses.filter((course) => course.status === status);
@@ -42,8 +44,8 @@ const CourseList = ({ user }) => {
     <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {courseList.map((course) => (
         <li
-          key={course.id}
-          onClick={clickable ? () => handleCourseClick(course.course_id) : null}
+          key={course.id} // Assuming `id` is the correct field name here
+          onClick={clickable ? () => handleCourseClick(course.course_id) : null} // Correctly passing `course.id`
           className={`bg-white p-6 rounded-lg shadow-lg transition-transform transform ${
             clickable ? 'cursor-pointer hover:scale-105 hover:shadow-indigo-300' : ''
           }`}

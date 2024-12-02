@@ -1,51 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import { fetchCoursesProf, fetchAssignments, fetchSubmissions, submitGrade } from '../../Services/api';
+import { ClipLoader } from 'react-spinners';
 
 const GradeSubmissions = () => {
-    const [courses, setCourses] = useState([]); // List of courses
-    const [assignments, setAssignments] = useState([]); // List of assignments for the selected course
-    const [submissions, setSubmissions] = useState([]); // List of submissions for the selected assignment
+    const [courses, setCourses] = useState([]);
+    const [assignments, setAssignments] = useState([]);
+    const [submissions, setSubmissions] = useState([]);
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [selectedAssignment, setSelectedAssignment] = useState(null);
     const [selectedSubmission, setSelectedSubmission] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-    // Fetch courses when the component mounts
     useEffect(() => {
         const fetchCoursesData = async () => {
+            setLoading(true);
             try {
                 const response = await fetchCoursesProf();
-                console.log('Fetched Courses:', response.cour);  // Check the response
                 if (response.status === 'success') {
                     setCourses(response.cour);
-                    console.log('courses', courses);
+                    setLoading(false);
                 } else {
-                    setCourses([]);  // Set to empty array if data is invalid
+                    setCourses([]);
+                    setLoading(false);
                 }
             } catch (error) {
                 console.error('Error fetching courses:', error.message);
+                setLoading(false);
             }
         };
     
         fetchCoursesData();
     }, []);
-    
 
-    // Fetch assignments whenever a course is selected
     useEffect(() => {
         if (selectedCourse) {
             const fetchAssignmentsData = async () => {
+                setLoading(true);
                 try {
                     const assignmentsData = await fetchAssignments(selectedCourse.course_id);
-                    console.log('fetched Assignments', assignmentsData.assignments);
-                    if(assignmentsData.status === 'success'){
-                    setAssignments(assignmentsData.assignments);
-                    setSelectedAssignment(assignmentsData.assignments[0]); 
-                    }// Set the first assignment as the selected assignment by default
-                    else{
-                        console.error('no assignments to fetch');
+                    if (assignmentsData.status === 'success') {
+                        setAssignments(assignmentsData.assignments);
+                        setSelectedAssignment(assignmentsData.assignments[0]);
+                        setLoading(false);
                     }
                 } catch (error) {
                     console.error('Error fetching assignments:', error.message);
+                    setLoading(false);
                 }
             };
 
@@ -53,15 +53,17 @@ const GradeSubmissions = () => {
         }
     }, [selectedCourse]);
 
-    // Fetch submissions whenever an assignment is selected
     useEffect(() => {
         if (selectedAssignment) {
             const fetchSubmissionsData = async () => {
+                setLoading(true);
                 try {
                     const submissionsData = await fetchSubmissions(selectedAssignment.assignment_id);
-                        setSubmissions(submissionsData.submissions);
+                    setSubmissions(submissionsData.submissions);
+                    setLoading(false);
                 } catch (error) {
                     console.error('Error fetching submissions:', error.message);
+                    setLoading(false);
                 }
             };
 
@@ -69,7 +71,6 @@ const GradeSubmissions = () => {
         }
     }, [selectedAssignment]);
 
-    // Handle grade update
     const handleGradeUpdate = (submissionId, newGrade) => {
         const updatedSubmissions = submissions.map((sub) =>
             sub.id === submissionId ? { ...sub, grade: newGrade } : sub
@@ -77,58 +78,55 @@ const GradeSubmissions = () => {
         setSubmissions(updatedSubmissions);
     };
 
-    // Handle submitting grade to API
     const handleSubmitGrade = async (submissionId, grade) => {
         try {
             const user = JSON.parse(localStorage.getItem('user'));
             if (user && user.role === 'teacher') {
                 const teacherId = user.teacherId;
-                const feedback = ''; // Optionally pass feedback here
-    
+                const feedback = '';
                 await submitGrade(submissionId, teacherId, grade, feedback);
-                // Update state after successful submission
                 handleGradeUpdate(submissionId, grade);
             }
         } catch (error) {
             console.error('Error submitting grade:', error.message);
         }
     };
-    
+
     return (
-        <div className="p-8 bg-gray-100 min-h-screen">
-            <h2 className="text-3xl font-extrabold text-gray-800 mb-8">Grade Submissions</h2>
+        <div className="p-4 bg-white min-h-screen">
+            <h2 className="text-3xl font-extrabold text-indigo-700 mb-8">Grade Submissions</h2>
 
-            {/* Course Dropdown */}
-            <div className="mb-6">
-            <label className="font-medium text-gray-600">Select Course:</label>
-            <select
-            className="ml-3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            value={selectedCourse ? selectedCourse.course_name : ''}
-            onChange={(e) => {
-                const selected = courses.find((course) => course.course_name === e.target.value);
-                setSelectedCourse(selected);
-            }}
-        >
-            {/* Default "Select Course" option */}
-            <option value="">Select Course</option>
-
-            {/* Populate the dropdown with courses */}
-            {courses.length > 0 ? (
-                courses.map((course) => (
-                    <option key={course.course_id} value={course.course_name}>
-                        {course.course_name}
-                    </option>
-                ))
-            ) : (
-                <option value="">No courses available</option>
+            {loading && (
+                <div className="flex justify-center items-center mb-6">
+                    <ClipLoader color="#4B92D0" loading={loading} size={50} />
+                </div>
             )}
-        </select>
 
-        </div>
+            <div className="mb-6">
+                <label className="font-medium text-indigo-600">Select Course:</label>
+                <select
+                    className="ml-3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    value={selectedCourse ? selectedCourse.course_name : ''}
+                    onChange={(e) => {
+                        const selected = courses.find((course) => course.course_name === e.target.value);
+                        setSelectedCourse(selected);
+                    }}
+                >
+                    <option value="">Select Course</option>
+                    {courses.length > 0 ? (
+                        courses.map((course) => (
+                            <option key={course.course_id} value={course.course_name}>
+                                {course.course_name}
+                            </option>
+                        ))
+                    ) : (
+                        <option value="">No courses available</option>
+                    )}
+                </select>
+            </div>
 
-            {/* Assignment Dropdown */}
             <div className="mb-8">
-                <label className="font-medium text-gray-600">Select Assignment:</label>
+                <label className="font-medium text-indigo-600">Select Assignment:</label>
                 <select
                     className="ml-3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
                     value={selectedAssignment?.title || ''}
@@ -139,18 +137,21 @@ const GradeSubmissions = () => {
                         setSelectedAssignment(selected);
                     }}
                 >
-                    {assignments.map((assignment) => (
-                        <option key={assignment.assignment_id} value={assignment.title}>
-                            {assignment.title}
-                        </option>
-                    ))}
+                    {assignments.length > 0 ? (
+                        assignments.map((assignment) => (
+                            <option key={assignment.assignment_id} value={assignment.title}>
+                                {assignment.title}
+                            </option>
+                        ))
+                    ) : (
+                        <option value="">No assignments available</option>
+                    )}
                 </select>
             </div>
 
-            {/* Submissions Table */}
-            <div className="overflow-x-auto rounded-lg shadow-md">
+            <div className="overflow-x-auto shadow-md">
                 <table className="w-full border-collapse bg-white rounded-lg overflow-hidden">
-                    <thead className="bg-indigo-500 text-white">
+                    <thead className="bg-indigo-600 text-white">
                         <tr>
                             <th className="px-6 py-3 text-left text-sm font-semibold">Student Name</th>
                             <th className="px-6 py-3 text-left text-sm font-semibold">Grade</th>
@@ -190,7 +191,6 @@ const GradeSubmissions = () => {
                 </table>
             </div>
 
-            {/* Grade Modal */}
             {selectedSubmission && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"

@@ -554,3 +554,24 @@ export const assignmentCalenderProf = async (user) => {
     return { status: 'error', message: error.message };
   }
 };
+
+export const AssignAssignmentProfessors = async (assignmentData) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/assignAssignment/assign-assignment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(assignmentData),
+    });
+    if (response.ok) {
+      const result = await response.json();
+      return result;
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to assign the assignment');
+    }
+  } catch (error) {
+    throw new Error(error.message || 'An error occurred while assigning the assignment');
+  }
+};

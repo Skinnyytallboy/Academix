@@ -33,12 +33,13 @@ const CourseList = ({ user }) => {
     navigate(`/course/${courseId}`);
   };
 
-  const categorizeCourses = (status) => courses.filter((course) => course.status === status);
+  const categorizeCourses = (statusArray) => courses.filter((course) => statusArray.includes(course.status));
 
-  const availableCourses = categorizeCourses('Incomplete');
-  const withdrawnCourses = categorizeCourses('Withdrawn');
-  const completedCourses = categorizeCourses('Completed');
-  const failedCourses = categorizeCourses('Failed');
+  const availableCourses = categorizeCourses(['Incomplete', 'Enrolled']);
+  const withdrawnCourses = categorizeCourses(['Withdrawn']);
+  const completedCourses = categorizeCourses(['Completed']);
+  const failedCourses = categorizeCourses(['Failed']);
+  
 
   const renderCourseList = (courseList, clickable = false) => (
     <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
